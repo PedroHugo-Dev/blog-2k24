@@ -9,7 +9,11 @@ $paginas = [
     'bemvindo' => 'conteudo/cadastro_contato.php',
     'editar' => 'conteudo/update_contato.php',
     'perfil' => 'conteudo/perfil.php',
-    'relatorio' => 'conteudo/relatorio.php'
+    'relatorio' => 'conteudo/relatorio.php',
+
+    'jogos' => 'conteudo/assunto.php?assunto=jogos',
+    'tecnologias' => 'conteudo/assunto.php?assunto=tecnologias',
+    'filmes' => 'conteudo/assunto.php?assunto=filmes'
 ];
 
 // Verificar se a ação existe no array, caso contrário, usar a página padrão

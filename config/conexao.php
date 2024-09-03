@@ -3,7 +3,7 @@
 if (!defined('DB_CONFIG')) {
     define('DB_CONFIG', [
         'host' => 'localhost',
-        'dbname' => 'blogNew',
+        'dbname' => 'blog_new',
         'user' => 'root',
         'pass' => 'bdjmf'
     ]);

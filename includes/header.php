@@ -178,17 +178,17 @@ try {
             </a>
             <ul class="nav nav-treeview">
             <li class="nav-item">
-                <a href="./index2.html" class="nav-link">
+                <a href="../paginas/assunto.php?assunto=jogos" class="nav-link">
                   <p>Jogos</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./index2.html" class="nav-link">
+                <a href="../paginas/assunto.php?assunto=filmes" class="nav-link">
                   <p>Filmes</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./index3.html" class="nav-link">
+                <a href="../paginas/assunto.php?assunto=tecnologias" class="nav-link">
                   <p>Tecnologias</p>
                 </a>
               </li>
