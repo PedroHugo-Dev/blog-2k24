@@ -102,23 +102,21 @@ try {
 }
 ?>  
 
-<!-- PAROU AQ -->
   <nav class="main-header navbar navbar-expand navbar-dark">
-    <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
-      
-
     </ul>
-  
-    <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">
-    </ul>
+     <ul class="navbar-nav ml-auto">
+      <div class="col-15">
+            <button type="submit" name="botao" class="btn btn-primary btn-block">
+          <a href="?sair" class="dropdown-item">
+          <i class="fas fa-sign-out-alt mr-2"></i> Sair</a>
+          </button>
+          </div>
+      </ul>
   </nav>
-  
-  <!-- ACABOU AQ -->
 
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
