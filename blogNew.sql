@@ -131,7 +131,7 @@ CREATE TABLE `tb_user` (
   `data_cadastro` date DEFAULT NULL,
   PRIMARY KEY (`id_user`),
   UNIQUE KEY `id_user_UNIQUE` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,7 +140,7 @@ CREATE TABLE `tb_user` (
 
 LOCK TABLES `tb_user` WRITE;
 /*!40000 ALTER TABLE `tb_user` DISABLE KEYS */;
-INSERT INTO `tb_user` VALUES (21,'adasd','asdas','asdasd','4gsdf','2024-08-29');
+INSERT INTO `tb_user` VALUES (21,'adasd','asdas','asdasd','4gsdf','2024-08-29'),(22,'avatar-padrao.png','a','a@a','$2y$10$Lf6yDCVAP2ToHSAWnoJHO.B/SIQmcqY5zcqHET.ZseQYxls.JDXjC','2024-08-30');
 /*!40000 ALTER TABLE `tb_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -158,10 +158,11 @@ CREATE TABLE `topico` (
   `data_criacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `numero_users` varchar(10) NOT NULL,
   `id_criador` int NOT NULL,
+  `assunto` enum('Jogo','Filme','Tecnologia') NOT NULL,
   PRIMARY KEY (`id_topico`),
   UNIQUE KEY `id_topico_UNIQUE` (`id_topico`),
   UNIQUE KEY `id_criador_UNIQUE` (`id_criador`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -182,4 +183,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-30  9:25:41
+-- Dump completed on 2024-08-30 11:37:54
