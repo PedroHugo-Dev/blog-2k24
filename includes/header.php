@@ -176,17 +176,17 @@ try {
             </a>
             <ul class="nav nav-treeview">
             <li class="nav-item">
-                <a href="./index2.html" class="nav-link">
+                <a href="./assunto.php" class="nav-link">
                   <p>Jogos</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./index2.html" class="nav-link">
+                <a href="./assunto.php?assunto=filmes" class="nav-link">
                   <p>Filmes</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./index3.html" class="nav-link">
+                <a href="./assunto.php?assunto=tecnologias" class="nav-link">
                   <p>Tecnologias</p>
                 </a>
               </li>
@@ -201,17 +201,17 @@ try {
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="./index.html" class="nav-link">
+                <a href="./index1.php" class="nav-link">
                   <p>Sobre o site</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./index2.html" class="nav-link">
+                <a href="./index2.php" class="nav-link">
                   <p>Ajuda</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./index3.html" class="nav-link">
+                <a href="./index3.php" class="nav-link">
                   <p>Contatos</p>
                 </a>
               </li>
