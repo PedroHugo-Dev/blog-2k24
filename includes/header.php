@@ -102,29 +102,27 @@ try {
 }
 ?>  
 
-<!-- PAROU AQ -->
   <nav class="main-header navbar navbar-expand navbar-dark">
-    <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
-      
-
     </ul>
-  
-    <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">
-    </ul>
+     <ul class="navbar-nav ml-auto">
+      <div class="col-15">
+            <button type="submit" name="botao" class="btn btn-primary btn-block">
+          <a href="?sair" class="dropdown-item">
+          <i class="fas fa-sign-out-alt mr-2"></i> Sair</a>
+          </button>
+          </div>
+      </ul>
   </nav>
-  
-  <!-- ACABOU AQ -->
 
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-      <span class="brand-text font-weight-light">Agenda Eletrônica</span>
+      <span class="brand-text font-weight-light">Blog||JMF</span>
     </a>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -178,17 +176,17 @@ try {
             </a>
             <ul class="nav nav-treeview">
             <li class="nav-item">
-                <a href="../paginas/assunto.php?assunto=jogos" class="nav-link">
+                <a href="./assunto.php" class="nav-link">
                   <p>Jogos</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="../paginas/assunto.php?assunto=filmes" class="nav-link">
+                <a href="./assunto.php?assunto=filmes" class="nav-link">
                   <p>Filmes</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="../paginas/assunto.php?assunto=tecnologias" class="nav-link">
+                <a href="./assunto.php?assunto=tecnologias" class="nav-link">
                   <p>Tecnologias</p>
                 </a>
               </li>
@@ -203,17 +201,17 @@ try {
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="./index.html" class="nav-link">
+                <a href="./index1.php" class="nav-link">
                   <p>Sobre o site</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./index2.html" class="nav-link">
+                <a href="./index2.php" class="nav-link">
                   <p>Ajuda</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./index3.html" class="nav-link">
+                <a href="./index3.php" class="nav-link">
                   <p>Contatos</p>
                 </a>
               </li>
