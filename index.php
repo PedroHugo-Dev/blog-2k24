@@ -36,7 +36,7 @@ if (isset($_SESSION['loginUser']) && isset($_SESSION['senhaUser'])) {
                                 echo '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>
                                 <strong>Logado com sucesso!</strong> Você será redirecionado para o StarBlog :)</div>';
 
-                                header("Location: paginas/home.php?acao=home");
+                                header("Location: paginas/home.php?acao=bemvindo");
                                 exit(); // Certifique-se de usar exit() após header()
                             } else {
                                 echo '<div class="alert alert-danger">
