@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.39, for Linux (x86_64)
 --
--- Host: localhost    Database: blog_new
+-- Host: localhost    Database: blogNew
 -- ------------------------------------------------------
 -- Server version	8.0.39-0ubuntu0.22.04.1
 
@@ -133,7 +133,7 @@ CREATE TABLE `tb_user` (
   `data_cadastro` date DEFAULT NULL,
   PRIMARY KEY (`id_user`),
   UNIQUE KEY `id_user_UNIQUE` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -142,7 +142,7 @@ CREATE TABLE `tb_user` (
 
 LOCK TABLES `tb_user` WRITE;
 /*!40000 ALTER TABLE `tb_user` DISABLE KEYS */;
-INSERT INTO `tb_user` VALUES (21,'adasd','asdas','asdasd','4gsdf','2024-08-29'),(22,'avatar-padrao.png','a','a@a','$2y$10$Lf6yDCVAP2ToHSAWnoJHO.B/SIQmcqY5zcqHET.ZseQYxls.JDXjC','2024-08-30');
+INSERT INTO `tb_user` VALUES (21,'adasd','asdas','asdasd','4gsdf','2024-08-29'),(22,'avatar-padrao.png','a','a@a','$2y$10$Lf6yDCVAP2ToHSAWnoJHO.B/SIQmcqY5zcqHET.ZseQYxls.JDXjC','2024-08-30'),(23,'avatar-padrao.png','ph','ph@gmail.com','$2y$10$6bvM9oSXgpxT.TJejtL9meMlLKp1HjBPx9l9MgG219og5xPsgEy7e',NULL);
 /*!40000 ALTER TABLE `tb_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -160,10 +160,8 @@ CREATE TABLE `topico` (
   `data_criacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `numero_users` varchar(10) NOT NULL,
   `id_criador` int NOT NULL,
-  `assunto` enum('jogos','filmes','tecnologias') NOT NULL,
   PRIMARY KEY (`id_topico`),
-  UNIQUE KEY `id_topico_UNIQUE` (`id_topico`),
-  UNIQUE KEY `id_criador_UNIQUE` (`id_criador`)
+  UNIQUE KEY `id_topico_UNIQUE` (`id_topico`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -173,7 +171,7 @@ CREATE TABLE `topico` (
 
 LOCK TABLES `topico` WRITE;
 /*!40000 ALTER TABLE `topico` DISABLE KEYS */;
-INSERT INTO `topico` VALUES (2,'Teste','abcasdfasd','2024-09-03 07:37:03','1',22,'jogos');
+INSERT INTO `topico` VALUES (2,'Teste','abcasdfasd','2024-09-03 07:37:03','1',22);
 /*!40000 ALTER TABLE `topico` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -186,4 +184,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-04  7:51:30
+-- Dump completed on 2024-09-10  7:47:10

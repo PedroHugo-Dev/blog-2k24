@@ -102,11 +102,13 @@ try {
 }
 ?>  
 
+<!-- index.html -->
+
 <nav class="main-header navbar navbar-expand navbar-dark">
   <ul class="navbar-nav">
     <li class="nav-item">
-      <button type="button" class="btn btn-primary">
-        <i class="fas fa-comment-alt mr-2"></i> Criar Tópico
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#criarTopicoModal">
+        <i class="fas fa-comment-alt mr-2"></i> Criar Post
       </button>
     </li>
   </ul>
@@ -118,13 +120,44 @@ try {
   </form>
   <ul class="navbar-nav ml-auto">
     <li class="nav-item">
-    <a href="?sair">
-      <button type="button" class="btn btn-primary">
-        <i class="fas fa-sign-out-alt mr-2"></i> Sair
-      </button>
+      <a href="?sair">
+        <button type="button" class="btn btn-primary">
+          <i class="fas fa-sign-out-alt mr-2"></i> Sair
+        </button>
+      </a>
     </li>
   </ul>
 </nav>
+<!-- Modal para criar tópico -->
+<div class="modal fade" id="criarTopicoModal" tabindex="-1" role="dialog" aria-labelledby="criarTopicoModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="criarTopicoModalLabel">Criar Post</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="create_topic.php" method="post">
+          <div class="form-group">
+            <label for="titulo">Título</label>
+            <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Digite o título do Post">
+          </div>
+          <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <textarea class="form-control" id="descricao" name="descricao" rows="3" placeholder="Digite a descrição do Post"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        <button type="submit" class="btn btn-primary">Criar Tópico</button>
+      </div>
+    </div>
+  </div>
+</div>
+
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
@@ -174,6 +207,9 @@ try {
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
+
+
+
           <li class="nav-item menu-open">
             <a href="#" class="nav-link">
               <p>
@@ -182,21 +218,42 @@ try {
               </p>
             </a>
             <ul class="nav nav-treeview">
+
             <li class="nav-item">
                 <a href="./assunto.php" class="nav-link">
                   <p>Jogos</p>
                 </a>
               </li>
-              <li class="nav-item">
+
+              <li class="nav-im">
                 <a href="./assunto.php?assunto=filmes" class="nav-link">
                   <p>Filmes</p>
                 </a>
               </li>
+
               <li class="nav-item">
                 <a href="./assunto.php?assunto=tecnologias" class="nav-link">
                   <p>Tecnologias</p>
                 </a>
               </li>
+
+              <?php 
+                $query = $conect->prepare("SELECT * FROM topico ORDER BY nome DESC");
+                $query->execute();
+                $topicos = $query->fetchAll(PDO::FETCH_ASSOC);
+                ?>
+
+                <?php foreach ($topicos as $topico): ?>
+                  <li class="nav-item">
+                    <a href="./assunto.php?id_topico=<?= $topico['nome'] ?>" class="nav-link">
+                      <p><?= htmlspecialchars($topico['nome']); ?></p>
+                    </a>
+                  </li>
+
+              <?php endforeach; ?>
+
+
+
             </ul>
           </li>
           <li class="nav-item menu-open">
