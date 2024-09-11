@@ -102,11 +102,13 @@ try {
 }
 ?>  
 
+<!-- index.html -->
+
 <nav class="main-header navbar navbar-expand navbar-dark">
   <ul class="navbar-nav">
     <li class="nav-item">
-      <button type="button" class="btn btn-primary">
-        <i class="fas fa-comment-alt mr-2"></i> Criar Tópico
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#criarTopicoModal">
+        <i class="fas fa-comment-alt mr-2"></i> Criar Post
       </button>
     </li>
   </ul>
@@ -118,13 +120,98 @@ try {
   </form>
   <ul class="navbar-nav ml-auto">
     <li class="nav-item">
-    <a href="?sair">
-      <button type="button" class="btn btn-primary">
-        <i class="fas fa-sign-out-alt mr-2"></i> Sair
-      </button>
+      <a href="?sair">
+        <button type="button" class="btn btn-primary">
+          <i class="fas fa-sign-out-alt mr-2"></i> Sair
+        </button>
+      </a>
     </li>
   </ul>
 </nav>
+<?php
+include_once('../config/conexao.php');
+
+// Verifica se o formulário foi submetido
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  // Obtém os dados do formulário
+  $titulo = $_POST['titulo'];
+  $descricao = $_POST['descricao'];
+  $assunto = $_POST['assunto'];
+
+  // Verifica se os campos estão preenchidos
+  if (!empty($titulo) && !empty($descricao) && !empty($assunto)) {
+      // Recupera o id_topico com base no assunto fornecido
+      $stmt = $conect->prepare("SELECT id_topico FROM topico WHERE nome = :assunto");
+      $stmt->bindParam(':assunto', $assunto, PDO::PARAM_STR);
+      $stmt->execute();
+      $id_topico = $stmt->fetchColumn();
+
+      // Verifica se id_topico foi encontrado
+      if ($id_topico !== false) {
+          // Prepara e executa a consulta SQL para inserir o post
+          $query = $conect->prepare("INSERT INTO post (id_topico, id_user, titulo, corpo, data_criacao, data_modificacao, numero_likes, numero_deslikes, numero_comentarios, assunto) VALUES (:id_topico, :id_user, :titulo, :corpo, NOW(), NOW(), '0', '0', '0', :assunto)");
+          $query->bindParam(':id_topico', $id_topico, PDO::PARAM_INT);
+          $query->bindParam(':id_user', $_SESSION['loginUser'], PDO::PARAM_INT);
+          $query->bindParam(':titulo', $titulo, PDO::PARAM_STR);
+          $query->bindParam(':corpo', $descricao, PDO::PARAM_STR);
+          $query->bindParam(':assunto', $assunto, PDO::PARAM_STR);
+
+          // Executa a consulta SQL
+          if ($query->execute()) {
+              // Redireciona para a página de sucesso
+              header('Location: ../index.php?acao=sucesso');
+              exit;
+          } else {
+              // Exibe uma mensagem de erro
+              echo 'Erro ao criar o post!';
+          }
+      } else {
+          // Exibe uma mensagem de erro se o assunto não for encontrado
+          echo 'Assunto não encontrado!';
+      }
+  } else {
+      // Exibe uma mensagem de erro se os campos não estiverem preenchidos
+      echo 'Preencha todos os campos!';
+  }
+}
+
+?>
+<!-- Modal para criar tópico -->
+<div class="modal fade" id="criarTopicoModal" tabindex="-1" role="dialog" aria-labelledby="criarTopicoModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="criarTopicoModalLabel">Criar Post</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post">
+          <div class="form-group">
+            <label for="titulo">Título</label>
+            <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Digite o título do Post" required>
+          </div>
+          <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <textarea class="form-control" id="descricao" name="descricao" rows="3" placeholder="Digite a descrição do Post" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="assunto">Assunto</label>
+            <select class="form-control" id="assunto" name="assunto" required>
+              <option value="" disabled selected>Selecione o assunto</option>
+              <option value="jogos">Jogos</option>
+              <option value="filmes">Filmes</option>
+              <option value="tecnologias">Tecnologias</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Criar Tópico</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
@@ -174,6 +261,9 @@ try {
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
+
+
+
           <li class="nav-item menu-open">
             <a href="#" class="nav-link">
               <p>
@@ -182,21 +272,38 @@ try {
               </p>
             </a>
             <ul class="nav nav-treeview">
+
             <li class="nav-item">
                 <a href="./assunto.php" class="nav-link">
                   <p>Jogos</p>
                 </a>
               </li>
-              <li class="nav-item">
+
+              <li class="nav-im">
                 <a href="./assunto.php?assunto=filmes" class="nav-link">
                   <p>Filmes</p>
                 </a>
               </li>
+
               <li class="nav-item">
                 <a href="./assunto.php?assunto=tecnologias" class="nav-link">
                   <p>Tecnologias</p>
                 </a>
               </li>
+
+              <?php 
+                $query = $conect->prepare("SELECT * FROM topico ORDER BY nome DESC");
+                $query->execute();
+                $topicos = $query->fetchAll(PDO::FETCH_ASSOC);
+                ?>
+
+                <?php foreach ($topicos as $topico): ?>
+                  <li class="nav-item">
+                    <a href="./assunto.php?id_topico=<?= $topico['nome'] ?>" class="nav-link">
+                      <p><?= htmlspecialchars($topico['nome']); ?></p>
+                    </a>
+                  </li>
+              <?php endforeach; ?>
             </ul>
           </li>
           <li class="nav-item menu-open">

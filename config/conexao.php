@@ -16,4 +16,6 @@ try {
     $conect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     echo "<strong>ERRO DE PDO = </strong>" . $e->getMessage();
+    exit;
 }
+?>
