@@ -222,6 +222,13 @@ try {
                   <p>Contatos</p>
                 </a>
               </li>
+              <?php ///////// ?>
+              <li class="nav-item">
+                <a href="../paginas/index3.php" class="nav-link">
+                  <p>Painel de administrador</p>
+                </a>
+              </li>
+
             </ul>
           </li>
         </ul>
