@@ -91,12 +91,12 @@ CREATE TABLE `post` (
   `id_topico` int NOT NULL,
   `id_user` int NOT NULL,
   `titulo` varchar(45) NOT NULL,
-  `corpo` text NOT NULL,
+  `descricao` varchar(1000) NOT NULL,
   `data_criacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `data_modificacao` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `numero_likes` varchar(10) NOT NULL,
-  `numero_deslikes` varchar(10) NOT NULL,
-  `numero_comentarios` varchar(10) NOT NULL,
+  `numero_likes` varchar(10) NOT NULL DEFAULT '0',
+  `numero_deslikes` varchar(10) NOT NULL DEFAULT '0',
+  `numero_comentarios` varchar(10) NOT NULL DEFAULT '0',
   `assunto` enum('jogos','filmes','tecnologias') NOT NULL,
   PRIMARY KEY (`id_post`,`id_topico`,`id_user`),
   UNIQUE KEY `id_post_UNIQUE` (`id_post`),
@@ -104,7 +104,7 @@ CREATE TABLE `post` (
   KEY `fk_post_tb_user1_idx` (`id_user`),
   CONSTRAINT `fk_post_tb_user1` FOREIGN KEY (`id_user`) REFERENCES `tb_user` (`id_user`) ON DELETE CASCADE,
   CONSTRAINT `fk_post_topico` FOREIGN KEY (`id_topico`) REFERENCES `topico` (`id_topico`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -113,7 +113,6 @@ CREATE TABLE `post` (
 
 LOCK TABLES `post` WRITE;
 /*!40000 ALTER TABLE `post` DISABLE KEYS */;
-INSERT INTO `post` VALUES (1,2,22,'teste','aasdfasdf','2024-09-03 07:41:47',NULL,'3','4','2','jogos');
 /*!40000 ALTER TABLE `post` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -171,7 +170,6 @@ CREATE TABLE `topico` (
 
 LOCK TABLES `topico` WRITE;
 /*!40000 ALTER TABLE `topico` DISABLE KEYS */;
-INSERT INTO `topico` VALUES (2,'Teste','abcasdfasd','2024-09-03 07:37:03','1',22);
 /*!40000 ALTER TABLE `topico` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -184,4 +182,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-10  7:47:10
+-- Dump completed on 2024-09-13  9:49:11

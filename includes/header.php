@@ -106,9 +106,16 @@ try {
 
 <nav class="main-header navbar navbar-expand navbar-dark">
   <ul class="navbar-nav">
+    <!-- Botão Criar Post -->
     <li class="nav-item">
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#criarTopicoModal">
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#criarPostModal">
         <i class="fas fa-comment-alt mr-2"></i> Criar Post
+      </button>
+    </li>
+    <!-- Botão Criar Tópico -->
+    <li class="nav-item">
+      <button type="button" class="btn btn-secondary ml-2" data-toggle="modal" data-target="#criarTopicoModal">
+        <i class="fas fa-plus mr-2"></i> Criar Tópico
       </button>
     </li>
   </ul>
@@ -128,66 +135,19 @@ try {
     </li>
   </ul>
 </nav>
-<?php
-include_once('../config/conexao.php');
 
-// Verifica se o formulário foi submetido
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  // Obtém os dados do formulário
-  $titulo = $_POST['titulo'];
-  $descricao = $_POST['descricao'];
-  $assunto = $_POST['assunto'];
-
-  // Verifica se os campos estão preenchidos
-  if (!empty($titulo) && !empty($descricao) && !empty($assunto)) {
-      // Recupera o id_topico com base no assunto fornecido
-      $stmt = $conect->prepare("SELECT id_topico FROM topico WHERE nome = :assunto");
-      $stmt->bindParam(':assunto', $assunto, PDO::PARAM_STR);
-      $stmt->execute();
-      $id_topico = $stmt->fetchColumn();
-
-      // Verifica se id_topico foi encontrado
-      if ($id_topico !== false) {
-          // Prepara e executa a consulta SQL para inserir o post
-          $query = $conect->prepare("INSERT INTO post (id_topico, id_user, titulo, corpo, data_criacao, data_modificacao, numero_likes, numero_deslikes, numero_comentarios, assunto) VALUES (:id_topico, :id_user, :titulo, :corpo, NOW(), NOW(), '0', '0', '0', :assunto)");
-          $query->bindParam(':id_topico', $id_topico, PDO::PARAM_INT);
-          $query->bindParam(':id_user', $_SESSION['loginUser'], PDO::PARAM_INT);
-          $query->bindParam(':titulo', $titulo, PDO::PARAM_STR);
-          $query->bindParam(':corpo', $descricao, PDO::PARAM_STR);
-          $query->bindParam(':assunto', $assunto, PDO::PARAM_STR);
-
-          // Executa a consulta SQL
-          if ($query->execute()) {
-              // Redireciona para a página de sucesso
-              header('Location: ../index.php?acao=sucesso');
-              exit;
-          } else {
-              // Exibe uma mensagem de erro
-              echo 'Erro ao criar o post!';
-          }
-      } else {
-          // Exibe uma mensagem de erro se o assunto não for encontrado
-          echo 'Assunto não encontrado!';
-      }
-  } else {
-      // Exibe uma mensagem de erro se os campos não estiverem preenchidos
-      echo 'Preencha todos os campos!';
-  }
-}
-
-?>
-<!-- Modal para criar tópico -->
-<div class="modal fade" id="criarTopicoModal" tabindex="-1" role="dialog" aria-labelledby="criarTopicoModalLabel" aria-hidden="true">
+<!-- Modal HTML para Criar Post -->
+<div class="modal fade" id="criarPostModal" tabindex="-1" role="dialog" aria-labelledby="criarPostModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="criarTopicoModalLabel">Criar Post</h5>
+        <h5 class="modal-title" id="criarPostModalLabel">Criar Post</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form method="post">
+        <form method="post" action="criar-post.php">
           <div class="form-group">
             <label for="titulo">Título</label>
             <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Digite o título do Post" required>
@@ -205,12 +165,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               <option value="tecnologias">Tecnologias</option>
             </select>
           </div>
+          <input type="hidden" name="id_topico" value="1"> <!-- Ajuste conforme necessário -->
+          <input type="hidden" name="id_user" value="1"> <!-- Ajuste conforme necessário -->
+          <button type="submit" class="btn btn-primary">Criar Post</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal HTML para Criar Tópico -->
+<div class="modal fade" id="criarTopicoModal" tabindex="-1" role="dialog" aria-labelledby="criarTopicoModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="criarTopicoModalLabel">Criar Tópico</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="criar-topico.php">
+          <div class="form-group">
+            <label for="nome">Nome</label>
+            <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o nome do Tópico" required>
+          </div>
+          <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <textarea class="form-control" id="descricao" name="descricao" rows="3" placeholder="Digite a descrição do Tópico" required></textarea>
+          </div>
           <button type="submit" class="btn btn-primary">Criar Tópico</button>
         </form>
       </div>
     </div>
   </div>
 </div>
+
+
+
 
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
