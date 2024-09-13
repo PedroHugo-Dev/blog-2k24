@@ -79,40 +79,113 @@ if ($acao === 'bemvindo') {
 }
 ?>
 
+<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Blog - Home</h1>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
         <div class="row">
+          <!-- left column -->
           <div class="col-md-12">
+            <!-- general form elements -->
             <div class="card card-primary">
 
-            <?php if ($postagens): ?>
-                <?php foreach ($postagens as $post): ?>
-
-                    <div class="card-header">
-                        <h3 class="card-title">Blog - <?php echo htmlspecialchars($post['topico_nome']); ?></h3>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="posts">
-                            <article>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div id="posts-container" class="posts">
+                    <!-- Os posts iniciais serão inseridos aqui -->
+                    <?php if ($postagens): ?>
+                        <?php foreach ($postagens as $post): ?>
+                            <article class="post">
                                 <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
                                 <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
-                                <p><small>Postado em: <?php echo htmlspecialchars($post['data_criacao']); ?></small></p>
+                                <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
+                                <p><small>De: <?php echo $post['topico_nome']; ?></small></p>
                             </article>
+                            <hr style="border: 1px solid #ffc107;">
                         <?php endforeach; ?>
-
                     <?php else: ?>
-                        <p>Nenhuma postagem encontrada.</p>
+                        <p>No posts found for this topic.</p>
                     <?php endif; ?>
-
                 </div>
+                <div id="loading" style="display: none;">Carregando mais posts...</div>
               </div>
+              <!-- /.card-body -->
             </div>
+            <!-- /.card -->
           </div>
+          <!--/.col (right) -->
         </div>
-      </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
     </section>
-  </div>
+    <!-- /.content -->
+</div>
 
-  <?php include_once('../includes/footer.php'); ?>
+<?php include_once('../includes/footer.php'); ?>
+
+<script>
+    let offset = 5; // Começa após os 5 posts iniciais
+    let loading = false;
+
+    // Função para carregar posts
+    function carregarPosts() {
+        if (loading) return; // Evita múltiplas requisições simultâneas
+        loading = true;
+        document.getElementById('loading').style.display = 'block';
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'carregar_posts.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const posts = JSON.parse(xhr.responseText);
+                if (posts.length > 0) {
+                    const container = document.getElementById('posts-container');
+                    posts.forEach(post => {
+                        const postElement = document.createElement('article');
+                        postElement.classList.add('post');
+                        postElement.innerHTML = `
+                            <h2>${post.titulo}</h2>
+                            <p>${post.corpo}</p>
+                            <p><small>Postado em: ${post.data_criacao}</small></p>
+                            <p><small>De: ${post.topico_nome}</small></p>
+                        `;
+                        container.appendChild(postElement);
+                        container.appendChild(document.createElement('hr')).style.border = '1px solid #ffc107';
+                    });
+                    offset += posts.length; // Atualiza o offset
+                } else {
+                    window.removeEventListener('scroll', onScroll); // Remove o listener se não houver mais posts
+                }
+            }
+            document.getElementById('loading').style.display = 'none';
+            loading = false;
+        };
+        xhr.send(`offset=${offset}`);
+    }
+
+    // Função para verificar se o usuário chegou ao fim da página
+    function onScroll() {
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight) {
+            carregarPosts();
+        }
+    }
+
+    // Adiciona o evento de rolagem
+    window.addEventListener('scroll', onScroll);
+
+    // Carrega posts iniciais
+    carregarPosts();
+</script>

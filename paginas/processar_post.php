@@ -6,7 +6,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Recebe os dados do formulário
     $titulo = htmlspecialchars($_POST['titulo']);
     $descricao = htmlspecialchars($_POST['descricao']);
-    $id_topico = (int)$_POST['assunto'];
+    $id_topico = (int)$_POST['assunto']; // Alterado para id_topico
+    echo $_POST["assunto"];
     $id_user = 22; // ID do usuário logado, deve ser dinâmico no caso real
     $data_criacao = date('Y-m-d H:i:s');
 
@@ -14,11 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $numero_likes = '0';
     $numero_deslikes = '0';
     $numero_comentarios = '0';
-    
+
     // Prepara a consulta SQL para inserir o post
-    $sql = "INSERT INTO post (id_topico, id_user, titulo, corpo, data_criacao, numero_likes, numero_deslikes, numero_comentarios, assunto)
-            VALUES (:id_topico, :id_user, :titulo, :descricao, :data_criacao, :numero_likes, :numero_deslikes, :numero_comentarios, 
-            (SELECT nome FROM topico WHERE id_topico = :id_topico))";
+    $sql = "INSERT INTO post (id_topico, id_user, titulo, corpo, data_criacao, numero_likes, numero_deslikes, numero_comentarios)
+            VALUES (:id_topico, :id_user, :titulo, :descricao, :data_criacao, :numero_likes, :numero_deslikes, :numero_comentarios)";
 
     $stmt = $conect->prepare($sql);
 

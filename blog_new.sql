@@ -90,21 +90,20 @@ CREATE TABLE `post` (
   `id_post` int NOT NULL AUTO_INCREMENT,
   `id_topico` int NOT NULL,
   `id_user` int NOT NULL,
-  `titulo` varchar(45) NOT NULL,
+  `titulo` varchar(200) NOT NULL,
   `corpo` text NOT NULL,
   `data_criacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `data_modificacao` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `numero_likes` varchar(10) NOT NULL,
   `numero_deslikes` varchar(10) NOT NULL,
   `numero_comentarios` varchar(10) NOT NULL,
-  `assunto` varchar(40) NOT NULL,
   PRIMARY KEY (`id_post`,`id_topico`,`id_user`),
   UNIQUE KEY `id_post_UNIQUE` (`id_post`),
   KEY `fk_post_topico_idx` (`id_topico`),
   KEY `fk_post_tb_user1_idx` (`id_user`),
   CONSTRAINT `fk_post_tb_user1` FOREIGN KEY (`id_user`) REFERENCES `tb_user` (`id_user`) ON DELETE CASCADE,
   CONSTRAINT `fk_post_topico` FOREIGN KEY (`id_topico`) REFERENCES `topico` (`id_topico`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -113,7 +112,7 @@ CREATE TABLE `post` (
 
 LOCK TABLES `post` WRITE;
 /*!40000 ALTER TABLE `post` DISABLE KEYS */;
-INSERT INTO `post` VALUES (1,2,22,'teste','aasdfasdf','2024-09-03 07:41:47',NULL,'3','4','2','jogos'),(2,2,22,'aasd','asda','2024-09-13 08:25:33',NULL,'0','0','0','filmes'),(3,2,22,'ajdfj','asd','2024-09-13 08:25:49',NULL,'0','0','0','filmes'),(4,2,22,'asdf','adsf','2024-09-13 08:26:20',NULL,'0','0','0','filmes');
+INSERT INTO `post` VALUES (1,2,22,'teste','aasdfasdf','2024-09-03 07:41:47',NULL,'3','4','2'),(2,2,22,'aasd','asda','2024-09-13 08:25:33',NULL,'0','0','0'),(3,2,22,'ajdfj','asd','2024-09-13 08:25:49',NULL,'0','0','0'),(4,2,22,'asdf','adsf','2024-09-13 08:26:20',NULL,'0','0','0'),(8,2,22,'tes','asd','2024-09-13 09:56:58',NULL,'0','0','0'),(9,2,22,'teste2','asd','2024-09-13 10:18:35',NULL,'0','0','0'),(11,2,22,'asdas','adsd','2024-09-13 10:50:36',NULL,'0','0','0'),(12,4,22,'teste222','2','2024-09-13 10:51:25',NULL,'0','0','0'),(13,4,22,'asda','2asd','2024-09-13 10:53:45',NULL,'0','0','0'),(14,5,22,'hello!!!','this will be lorem ipsum','2024-09-13 10:58:33',NULL,'0','0','0'),(15,5,22,'asda','asdas','2024-09-13 11:22:31',NULL,'0','0','0'),(16,4,22,'heh','heh','2024-09-13 11:23:40',NULL,'0','0','0'),(17,5,22,'heh heh  Postado em: 2024-09-13 11:23:40','heh\r\nheh\r\n\r\nPostado em: 2024-09-13 11:23:40','2024-09-13 11:24:01',NULL,'0','0','0'),(18,5,22,'asd','asd','2024-09-13 11:28:19',NULL,'0','0','0'),(19,5,22,'asd','asd','2024-09-13 11:30:13',NULL,'0','0','0'),(20,5,22,'asd','gasf','2024-09-13 11:30:38',NULL,'0','0','0'),(21,5,22,'fasd','fdas','2024-09-13 11:30:47',NULL,'0','0','0');
 /*!40000 ALTER TABLE `post` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -134,7 +133,7 @@ CREATE TABLE `tb_user` (
   `administrador` tinyint NOT NULL,
   PRIMARY KEY (`id_user`),
   UNIQUE KEY `id_user_UNIQUE` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -143,7 +142,7 @@ CREATE TABLE `tb_user` (
 
 LOCK TABLES `tb_user` WRITE;
 /*!40000 ALTER TABLE `tb_user` DISABLE KEYS */;
-INSERT INTO `tb_user` VALUES (21,'adasd','asdas','asdasd','4gsdf','2024-08-29',0),(22,'avatar-padrao.png','a','a@a','$2y$10$Lf6yDCVAP2ToHSAWnoJHO.B/SIQmcqY5zcqHET.ZseQYxls.JDXjC','2024-08-30',0);
+INSERT INTO `tb_user` VALUES (21,'adasd','asdas','asdasd','4gsdf','2024-08-29',0),(22,'avatar-padrao.png','a','a@a','$2y$10$Lf6yDCVAP2ToHSAWnoJHO.B/SIQmcqY5zcqHET.ZseQYxls.JDXjC','2024-08-30',0),(23,'avatar-padrao.png','b','b@b','$2y$10$pihqNg0p/gXWHOEawk51he.NmBBvIdcre9DcysBW83KGgX/2z6fOG','2024-09-13',0),(24,'avatar-padrao.png','c','c@c','$2y$10$6wV04Swb/m7LxtzuGPW22.fMLEWzhCpIwvhE5SC9W.Lxhhrb1hx56','2024-09-13',0);
 /*!40000 ALTER TABLE `tb_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -161,12 +160,10 @@ CREATE TABLE `topico` (
   `data_criacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `numero_users` varchar(10) NOT NULL,
   `id_criador` int NOT NULL,
-  `assunto` enum('jogos','filmes','tecnologias') NOT NULL,
   `foto_topico` varchar(45) NOT NULL,
   PRIMARY KEY (`id_topico`),
-  UNIQUE KEY `id_topico_UNIQUE` (`id_topico`),
-  UNIQUE KEY `id_criador_UNIQUE` (`id_criador`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `id_topico_UNIQUE` (`id_topico`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -175,7 +172,7 @@ CREATE TABLE `topico` (
 
 LOCK TABLES `topico` WRITE;
 /*!40000 ALTER TABLE `topico` DISABLE KEYS */;
-INSERT INTO `topico` VALUES (2,'Teste','abcasdfasd','2024-09-03 07:37:03','1',22,'jogos','');
+INSERT INTO `topico` VALUES (2,'Teste','abcasdfasd','2024-09-03 07:37:03','1',22,''),(4,'teste2','tw','2024-09-13 10:33:33','1',22,'sa'),(5,'teste3','lorem ipsum dolores','2024-09-13 10:58:15','1',22,'as');
 /*!40000 ALTER TABLE `topico` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -188,4 +185,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-13  9:23:29
+-- Dump completed on 2024-09-13 11:38:23

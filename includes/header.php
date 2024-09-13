@@ -332,24 +332,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </a>
             <ul class="nav nav-treeview">
 
-            <li class="nav-item">
-                <a href="./assunto.php" class="nav-link">
-                  <p>Jogos</p>
-                </a>
-              </li>
-
-              <li class="nav-im">
-                <a href="./assunto.php?assunto=filmes" class="nav-link">
-                  <p>Filmes</p>
-                </a>
-              </li>
-
-              <li class="nav-item">
-                <a href="./assunto.php?assunto=tecnologias" class="nav-link">
-                  <p>Tecnologias</p>
-                </a>
-              </li>
-
               <?php 
                 $query = $conect->prepare("SELECT * FROM topico ORDER BY nome DESC");
                 $query->execute();
@@ -357,8 +339,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 ?>
 
                 <?php foreach ($topicos as $topico): ?>
-                  <li class="nav-item">
-                    <a href="./assunto.php?id_topico=<?= $topico['nome'] ?>" class="nav-link">
+                  <li class="nav-im">
+                    <a href="./assunto.php?assunto=<?= $topico['nome'] ?>" class="nav-link">
                       <p><?= htmlspecialchars($topico['nome']); ?></p>
                     </a>
                   </li>
