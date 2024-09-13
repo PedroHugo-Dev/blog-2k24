@@ -103,7 +103,7 @@ if ($acao === 'bemvindo') {
                         <?php endforeach; ?>
 
                     <?php else: ?>
-                        <p>No posts found for this topic.</p>
+                        <p>Nenhuma postagem encontrada.</p>
                     <?php endif; ?>
 
                 </div>

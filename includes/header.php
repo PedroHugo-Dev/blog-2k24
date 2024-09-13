@@ -50,9 +50,56 @@ include_once('sair.php');
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   <link rel="stylesheet" href="../dist/css/estilo.css">
+  <!-- Custom Styles -->
+  <style>
+    body {
+      background-color: #f0f4f8; /* Cor de fundo leve */
+    }
+    .navbar, .main-sidebar {
+      background-color: #25688E; /* Azul escuro para o fundo */
+    }
+    .navbar a, .navbar .btn, .main-sidebar .nav-link {
+      color: #ffffff; /* Branco para o texto dos links e botões */
+    }
+    .btn-primary {
+      background-color: #ffc107; /* Amarelo para o fundo do botão */
+      border-color: #ffc107; /* Amarelo para a borda do botão */
+      color: #25688E; /* Azul escuro para o texto do botão */
+    }
+    .modal-content {
+      background-color: #ffffff; /* Branco para o fundo do modal */
+    }
+    .modal-header, .modal-footer {
+      background-color: #25688E; /* Azul escuro para o cabeçalho e rodapé do modal */
+      color: #ffffff; /* Branco para o texto do modal */
+    }
+    .alert {
+      color: #25688E; /* Azul escuro para a mensagem de alerta */
+      background-color: #f8d7da; /* Fundo da mensagem de alerta */
+    }
+    .sidebar-dark-primary {
+      background-color: #25688E; /* Azul escuro para a barra lateral */
+    }
+    .brand-link {
+      color: #ffffff; /* Branco para o texto do logo */
+    }
+    .nav-sidebar .nav-link.active {
+      background-color: #25688E; /* Azul escuro para o link ativo */
+    }
+    .nav-sidebar .nav-link:hover {
+      background-color: #003d7a; /* Azul mais escuro para o link hover */
+    }
+    .foto-perfil {
+      border-radius: 50%; /* Garantir que a foto do perfil seja circular */
+    }
+    .card-primary{
+      color: #003d7a;
+    }
+  </style>
 </head>
-
 <body class="hold-transition sidebar-mini layout-fixed">
+
+</style>
 
 <div class="wrapper">
 
@@ -176,6 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 ?>
+
 <!-- Modal para criar tópico -->
 <div class="modal fade" id="criarTopicoModal" tabindex="-1" role="dialog" aria-labelledby="criarTopicoModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -187,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </button>
       </div>
       <div class="modal-body">
-        <form method="post">
+        <form method="post" action ="processar_post.php">
           <div class="form-group">
             <label for="titulo">Título</label>
             <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Digite o título do Post" required>
@@ -196,13 +244,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="descricao">Descrição</label>
             <textarea class="form-control" id="descricao" name="descricao" rows="3" placeholder="Digite a descrição do Post" required></textarea>
           </div>
+
+          <?php 
+                $query = $conect->prepare("SELECT * FROM topico ORDER BY nome DESC");
+                $query->execute();
+                $topicos = $query->fetchAll(PDO::FETCH_ASSOC);
+          ?>
           <div class="form-group">
             <label for="assunto">Assunto</label>
             <select class="form-control" id="assunto" name="assunto" required>
               <option value="" disabled selected>Selecione o assunto</option>
-              <option value="jogos">Jogos</option>
-              <option value="filmes">Filmes</option>
-              <option value="tecnologias">Tecnologias</option>
+
+              <?php foreach ($topicos as $topico): ?>
+                     <option value = <?= htmlspecialchars($topico['nome']); ?> > <?= htmlspecialchars($topico['nome']); ?> </option>
+              <?php endforeach; ?>
+
             </select>
           </div>
           <button type="submit" class="btn btn-primary">Criar Tópico</button>
