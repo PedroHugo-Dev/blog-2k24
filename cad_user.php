@@ -241,7 +241,7 @@ if (!empty($_FILES['foto']['name'])) {
 
 
 // Prepara a consulta SQL para inserção dos dados do usuário
-$cadastro = "INSERT INTO tb_user (foto_user, nome_user, email_user, senha_user) VALUES (:foto, :nome, :email, :senha)";
+$cadastro = "INSERT INTO tb_user (foto_user, nome_user, email_user, senha_user, administrador) VALUES (:foto, :nome, :email, :senha, 0)";
 
 
 try {
@@ -307,4 +307,3 @@ try {
 
 </body>
 </html>
-
