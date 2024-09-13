@@ -235,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </button>
       </div>
       <div class="modal-body">
-        <form method="post" action ="processar_post.php">
+        <form method="post" action="processar_post.php">
           <div class="form-group">
             <label for="titulo">Título</label>
             <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Digite o título do Post" required>
@@ -246,27 +246,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           </div>
 
           <?php 
-                $query = $conect->prepare("SELECT * FROM topico ORDER BY nome DESC");
-                $query->execute();
-                $topicos = $query->fetchAll(PDO::FETCH_ASSOC);
+          // Conectar ao banco de dados e buscar tópicos
+ // Inclua seu arquivo de conexão com o banco de dados
+          $query = $conect->prepare("SELECT * FROM topico ORDER BY nome DESC");
+          $query->execute();
+          $topicos = $query->fetchAll(PDO::FETCH_ASSOC);
           ?>
           <div class="form-group">
             <label for="assunto">Assunto</label>
             <select class="form-control" id="assunto" name="assunto" required>
               <option value="" disabled selected>Selecione o assunto</option>
-
               <?php foreach ($topicos as $topico): ?>
-                     <option value = <?= htmlspecialchars($topico['nome']); ?> > <?= htmlspecialchars($topico['nome']); ?> </option>
+                <option value="<?= htmlspecialchars($topico['id_topico']); ?>">
+                  <?= htmlspecialchars($topico['nome']); ?>
+                </option>
               <?php endforeach; ?>
-
             </select>
           </div>
-          <button type="submit" class="btn btn-primary">Criar Tópico</button>
+          <button type="submit" class="btn btn-primary">Criar Post</button>
         </form>
       </div>
     </div>
   </div>
 </div>
+
 
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
