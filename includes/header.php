@@ -390,7 +390,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               </li>
               <?php ///////// ?>
               <li class="nav-item">
-                <a href="../paginas/index3.php" class="nav-link">
+                <a href="../paginas/painel_adm.php?acao=bemvindo" class="nav-link">
                   <p>Painel de administrador</p>
                 </a>
               </li>
