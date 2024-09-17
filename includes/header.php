@@ -159,12 +159,17 @@ try {
       </button>
     </li>
   </ul>
-  <form class="form-inline mx-auto w-50">
-    <input type="search" class="form-control w-75" placeholder="Pesquisar...">
+
+<form class="form-inline mx-auto w-50" method="GET" action="">
+    <input type="search" class="form-control w-75" name="search" placeholder="Pesquisar..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
     <button type="submit" class="btn btn-primary">
-      <i class="fas fa-search mr-2"></i> Pesquisar
+        <i class="fas fa-search mr-2"></i> Pesquisar
     </button>
-  </form>
+</form>
+
+
+
+
   <ul class="navbar-nav ml-auto">
     <li class="nav-item">
       <a href="?sair">
@@ -176,7 +181,6 @@ try {
   </ul>
 </nav>
 <?php
-include_once('../config/conexao.php');
 
 // Verifica se o formulário foi submetido
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -385,3 +389,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
     <!-- /.sidebar -->
   </aside>
+

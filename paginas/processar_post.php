@@ -35,9 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Executa a consulta
     if ($stmt->execute()) {
         echo "Post criado com sucesso!";
-        $post = $_POST['assunto'];
-        echo $post;
-        //header("Location: ./home.php?acao=bemvindo");
+        header("Location: ./home.php?acao=bemvindo");
 
     } else {
         echo "Erro ao criar post.";

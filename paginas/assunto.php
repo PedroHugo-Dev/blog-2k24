@@ -141,18 +141,11 @@ if ($topicoResult) {
                         <div class="card-body">
                             <div class="posts" id="posts">
                                 <!-- Posts serão carregados aqui -->
-                                <?php foreach ($posts as $post): ?>
-                                    <article>
-                                        <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
-                                        <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
-                                        <p><small>Postado em: <?php echo htmlspecialchars($post['data_criacao']); ?></small></p>
-                                    </article>
-                                    <hr style="border: 1px solid #ffc107;">
-                                <?php endforeach; ?>
-                            </div>
-                            <div id="loading" style="display: none;">Carregando mais posts...</div>
-                        </div>
 
+                            
+                            </div>
+                            <div id="loading" style="display: none;"></div>
+                        </div>
                         
                     </div>
                 </div>

@@ -79,6 +79,92 @@ if ($acao === 'bemvindo') {
 }
 ?>
 
+<style>
+/* Estilizando o card e posts */
+.card-body {
+   padding: 20px;
+}
+
+/* Estilizando cada artigo */
+.posts article {
+   background-color: #ffffff;
+   border-radius: 8px;
+   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+   padding: 20px;
+   margin-bottom: 30px; /* Adiciona espaçamento entre artigos */
+}
+
+.posts h2 {
+   font-size: 22px;
+   margin-top: 0;
+   color: #333;
+   font-weight: 600;
+}
+
+.posts p {
+   line-height: 1.8;
+   color: #495057;
+   font-size: 16px;
+}
+
+.posts small {
+   display: block;
+   margin-top: 10px;
+   color: #6c757d;
+   font-size: 14px;
+}
+
+/* Adicionando espaçamento extra para o último artigo */
+.posts article:last-of-type {
+   margin-bottom: 0;
+}
+
+/* Melhorando a responsividade */
+@media (max-width: 992px) {
+   .content-header h1 {
+       font-size: 24px;
+   }
+
+   .card-header {
+       font-size: 18px;
+   }
+
+   .posts h2 {
+       font-size: 20px;
+   }
+
+   hr {
+       border: 1px solid #00ff00; /* Green color */
+   }
+}
+
+@media (max-width: 768px) {
+   .card-body {
+       padding: 15px;
+   }
+
+   .content-header h1 {
+       font-size: 20px;
+   }
+
+   .card-header {
+       font-size: 16px;
+   }
+
+   .posts h2 {
+       font-size: 18px;
+   }
+
+   .posts p {
+       font-size: 14px;
+   }
+
+   .posts small {
+       font-size: 12px;
+   }
+}
+</style>
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -103,7 +189,7 @@ if ($acao === 'bemvindo') {
 
               <!-- /.card-header -->
               <div class="card-body">
-                <div id="posts-container" class="posts">
+                <div id="posts" class="posts">
                     <!-- Os posts iniciais serão inseridos aqui -->
                     <?php if ($postagens): ?>
                         <?php foreach ($postagens as $post): ?>
@@ -116,10 +202,10 @@ if ($acao === 'bemvindo') {
                             <hr style="border: 1px solid #ffc107;">
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <p>No posts found for this topic.</p>
+                        <p>Nenhum post encontrado.</p>
                     <?php endif; ?>
                 </div>
-                <div id="loading" style="display: none;">Carregando mais posts...</div>
+                <div id="loading" style="display: none;"></div>
               </div>
               <!-- /.card-body -->
             </div>
