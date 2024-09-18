@@ -1,6 +1,7 @@
 <?php
 // processar_post.php
 include '../config/conexao.php'; // Inclua seu arquivo de conexão com o banco de dados
+include '../includes/header.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Recebe os dados do formulário
@@ -8,17 +9,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $descricao = htmlspecialchars($_POST['descricao']);
     $id_topico = (int)$_POST['assunto']; // Alterado para id_topico
     echo $_POST["assunto"];
-    $id_user = 22; // ID do usuário logado, deve ser dinâmico no caso real
+    $id_user = $id_user; // ID do usuário logado, deve ser dinâmico no caso real
     $data_criacao = date('Y-m-d H:i:s');
 
     // Valores padrão para novos posts
-    $numero_likes = '0';
-    $numero_deslikes = '0';
     $numero_comentarios = '0';
 
     // Prepara a consulta SQL para inserir o post
-    $sql = "INSERT INTO post (id_topico, id_user, titulo, corpo, data_criacao, numero_likes, numero_deslikes, numero_comentarios)
-            VALUES (:id_topico, :id_user, :titulo, :descricao, :data_criacao, :numero_likes, :numero_deslikes, :numero_comentarios)";
+    $sql = "INSERT INTO post (id_topico, id_user, titulo, corpo, data_criacao, numero_comentarios)
+            VALUES (:id_topico, :id_user, :titulo, :descricao, :data_criacao, :numero_comentarios)";
 
     $stmt = $conect->prepare($sql);
 
@@ -28,14 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bindParam(':titulo', $titulo);
     $stmt->bindParam(':descricao', $descricao);
     $stmt->bindParam(':data_criacao', $data_criacao);
-    $stmt->bindParam(':numero_likes', $numero_likes);
-    $stmt->bindParam(':numero_deslikes', $numero_deslikes);
     $stmt->bindParam(':numero_comentarios', $numero_comentarios);
 
     // Executa a consulta
     if ($stmt->execute()) {
         echo "Post criado com sucesso!";
-        header("Location: ./home.php?acao=bemvindo");
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
 
     } else {
         echo "Erro ao criar post.";

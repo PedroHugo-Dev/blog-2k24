@@ -223,7 +223,7 @@ if ($acao === 'bemvindo') {
                                                 <div class="comentario">
                                                     <p><strong><?php echo htmlspecialchars($comentario['nome_user']); ?>:</strong></p>
                                                     <p><?php echo nl2br(htmlspecialchars($comentario['corpo'])); ?></p>
-                                                    <p><small>Postado em: <?php echo $comentario['data_criacao']; ?></small></p>
+                                                    <p><small>Comentário postado em: <?php echo $comentario['data_criacao']; ?></small></p>
                                                 </div>
                                             <?php endforeach; ?>
                                         <?php else: ?>
@@ -231,8 +231,9 @@ if ($acao === 'bemvindo') {
                                         <?php endif; ?>
                                     </div>
                                     <!-- Formulário para adicionar comentários -->
-                                                <form method="POST" action="adicionar_comentario.php">
+                                                <form method="post" action="adicionar_comentario.php">
                                                     <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
+                                                    <input type="hidden" name="id_topico" value="<?php echo $post['id_topico']; ?>">
                                                     <div class="form-group">
                                                         <label for="comentario">Adicionar um comentário:</label>
                                                         <textarea id="comentario" name="texto_comentario" class="form-control" rows="3" required></textarea>

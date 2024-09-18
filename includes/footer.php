@@ -2,7 +2,7 @@
     <strong>Copyright &copy; 2024 - Todos os direitos reservados.</strong>
     
     <div class="float-right d-none d-sm-inline-block">
-      <b>Blog</b>
+      <b>StarBlog</b>
     </div>
   </footer>
 
