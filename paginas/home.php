@@ -192,18 +192,61 @@ if ($acao === 'bemvindo') {
                 <div id="posts" class="posts">
                     <!-- Os posts iniciais serão inseridos aqui -->
                     <?php if ($postagens): ?>
-                        <?php foreach ($postagens as $post): ?>
-                            <article class="post">
-                                <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
-                                <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
-                                <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
-                                <p><small>De: <?php echo $post['topico_nome']; ?></small></p>
-                            </article>
-                            <hr style="border: 1px solid #ffc107;">
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <p>Nenhum post encontrado.</p>
-                    <?php endif; ?>
+                            <?php foreach ($postagens as $post): ?>
+                                <article class="post">
+                                    <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
+                                    <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
+                                    <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
+                                    <p><small>De: <?php echo $post['topico_nome']; ?></small></p>
+                                    
+                                    <!-- Exibir comentários -->
+                                    <div class="comentarios">
+                                        <?php
+                                        // Obter e exibir comentários para o post
+                                        $idPost = $post['id_post'];
+                                        $selectComentarios = "
+                                            SELECT c.*, u.nome_user
+                                            FROM comentario c
+                                            JOIN tb_user u ON c.id_user = u.id_user
+                                            WHERE c.id_post = :idPost
+                                            ORDER BY c.data_criacao ASC
+                                        ";
+                                        
+                                        $resultadoComentarios = $conect->prepare($selectComentarios);
+                                        $resultadoComentarios->bindParam(':idPost', $idPost, PDO::PARAM_INT);
+                                        $resultadoComentarios->execute();
+                                        $comentarios = $resultadoComentarios->fetchAll(PDO::FETCH_ASSOC);
+                                        ?>
+
+                                        <?php if ($comentarios): ?>
+                                            <?php foreach ($comentarios as $comentario): ?>
+                                                <div class="comentario">
+                                                    <p><strong><?php echo htmlspecialchars($comentario['nome_user']); ?>:</strong></p>
+                                                    <p><?php echo nl2br(htmlspecialchars($comentario['corpo'])); ?></p>
+                                                    <p><small>Postado em: <?php echo $comentario['data_criacao']; ?></small></p>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <p>Nenhum comentário encontrado.</p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <!-- Formulário para adicionar comentários -->
+                                                <form method="POST" action="adicionar_comentario.php">
+                                                    <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
+                                                    <div class="form-group">
+                                                        <label for="comentario">Adicionar um comentário:</label>
+                                                        <textarea id="comentario" name="texto_comentario" class="form-control" rows="3" required></textarea>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Comentar</button>
+                                                </form>
+
+                                    <hr style="border: 1px solid #ffc107;">
+                                </article>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p>Nenhum post encontrado.</p>
+                        <?php endif; ?>
+                        
                 </div>
                 <div id="loading" style="display: none;"></div>
               </div>

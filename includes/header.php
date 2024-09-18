@@ -185,9 +185,11 @@ try {
 // Verifica se o formulário foi submetido
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Obtém os dados do formulário
+  if (isset($_POST['titulo'])) {
   $titulo = $_POST['titulo'];
   $descricao = $_POST['descricao'];
   $assunto = $_POST['assunto'];
+  
 
   // Verifica se os campos estão preenchidos
   if (!empty($titulo) && !empty($descricao) && !empty($assunto)) {
@@ -225,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       echo 'Preencha todos os campos!';
   }
 }
-
+}
 ?>
 
 <!-- Modal para criar tópico -->
