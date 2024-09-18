@@ -28,17 +28,15 @@ CREATE TABLE `comentario` (
   `id_post` int NOT NULL,
   `id_topico` int NOT NULL,
   `id_user` int NOT NULL,
-  `numero_deslikes` varchar(10) NOT NULL,
-  `numero_likes` varchar(10) NOT NULL,
   `data_criacao` date NOT NULL,
-  `data_modificacao` date NOT NULL,
+  `data_modificacao` date DEFAULT NULL,
   PRIMARY KEY (`id_comentario`,`id_post`,`id_topico`,`id_user`),
   UNIQUE KEY `id_comentario_UNIQUE` (`id_comentario`),
   KEY `fk_comentario_post1_idx` (`id_post`,`id_topico`),
   KEY `fk_comentario_tb_user1_idx` (`id_user`),
   CONSTRAINT `fk_comentario_post1` FOREIGN KEY (`id_post`, `id_topico`) REFERENCES `post` (`id_post`, `id_topico`) ON DELETE CASCADE,
   CONSTRAINT `fk_comentario_tb_user1` FOREIGN KEY (`id_user`) REFERENCES `tb_user` (`id_user`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -47,6 +45,7 @@ CREATE TABLE `comentario` (
 
 LOCK TABLES `comentario` WRITE;
 /*!40000 ALTER TABLE `comentario` DISABLE KEYS */;
+INSERT INTO `comentario` VALUES (1,'ads',47,5,22,'2024-09-18',NULL),(2,'OI',50,2,22,'2024-09-18',NULL),(3,'OLA',50,2,22,'2024-09-18',NULL),(4,'poi',39,5,22,'2024-09-18',NULL);
 /*!40000 ALTER TABLE `comentario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,8 +93,6 @@ CREATE TABLE `post` (
   `corpo` text NOT NULL,
   `data_criacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `data_modificacao` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `numero_likes` varchar(10) NOT NULL,
-  `numero_deslikes` varchar(10) NOT NULL,
   `numero_comentarios` varchar(10) NOT NULL,
   PRIMARY KEY (`id_post`,`id_topico`,`id_user`),
   UNIQUE KEY `id_post_UNIQUE` (`id_post`),
@@ -103,7 +100,7 @@ CREATE TABLE `post` (
   KEY `fk_post_tb_user1_idx` (`id_user`),
   CONSTRAINT `fk_post_tb_user1` FOREIGN KEY (`id_user`) REFERENCES `tb_user` (`id_user`) ON DELETE CASCADE,
   CONSTRAINT `fk_post_topico` FOREIGN KEY (`id_topico`) REFERENCES `topico` (`id_topico`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -112,7 +109,7 @@ CREATE TABLE `post` (
 
 LOCK TABLES `post` WRITE;
 /*!40000 ALTER TABLE `post` DISABLE KEYS */;
-INSERT INTO `post` VALUES (1,2,22,'teste','aasdfasdf','2024-09-03 07:41:47',NULL,'3','4','2'),(2,2,22,'aasd','asda','2024-09-13 08:25:33',NULL,'0','0','0'),(3,2,22,'ajdfj','asd','2024-09-13 08:25:49',NULL,'0','0','0'),(4,2,22,'asdf','adsf','2024-09-13 08:26:20',NULL,'0','0','0'),(8,2,22,'tes','asd','2024-09-13 09:56:58',NULL,'0','0','0'),(9,2,22,'teste2','asd','2024-09-13 10:18:35',NULL,'0','0','0'),(11,2,22,'asdas','adsd','2024-09-13 10:50:36',NULL,'0','0','0'),(12,4,22,'teste222','2','2024-09-13 10:51:25',NULL,'0','0','0'),(13,4,22,'asda','2asd','2024-09-13 10:53:45',NULL,'0','0','0'),(14,5,22,'hello!!!','this will be lorem ipsum','2024-09-13 10:58:33',NULL,'0','0','0'),(15,5,22,'asda','asdas','2024-09-13 11:22:31',NULL,'0','0','0'),(16,4,22,'heh','heh','2024-09-13 11:23:40',NULL,'0','0','0'),(17,5,22,'heh heh  Postado em: 2024-09-13 11:23:40','heh\r\nheh\r\n\r\nPostado em: 2024-09-13 11:23:40','2024-09-13 11:24:01',NULL,'0','0','0'),(18,5,22,'asd','asd','2024-09-13 11:28:19',NULL,'0','0','0'),(19,5,22,'asd','asd','2024-09-13 11:30:13',NULL,'0','0','0'),(20,5,22,'asd','gasf','2024-09-13 11:30:38',NULL,'0','0','0'),(21,5,22,'fasd','fdas','2024-09-13 11:30:47',NULL,'0','0','0');
+INSERT INTO `post` VALUES (35,5,22,'a','a','2024-09-17 07:41:26',NULL,'0'),(36,5,22,'asd','asd','2024-09-17 07:42:57',NULL,'0'),(37,5,22,'aa','aa','2024-09-17 07:43:09',NULL,'0'),(38,5,22,'aa','aa','2024-09-17 07:43:29',NULL,'0'),(39,5,22,'bb','bb','2024-09-17 07:43:35',NULL,'0'),(40,4,22,'ccc','ccc','2024-09-17 07:44:51',NULL,'0'),(41,4,22,'ddd','ddd','2024-09-17 07:45:03',NULL,'0'),(42,2,22,'fff','fff','2024-09-17 07:45:16',NULL,'0'),(43,5,22,'asd','asd','2024-09-17 07:46:45',NULL,'0'),(44,2,22,'g','g','2024-09-17 07:48:11',NULL,'0'),(45,5,22,'hello world','i woadkflak dfoi woadkflak dfoi woadkflak dfoi woadkflak dfoi woadkflak dfoi woadkflak dfoi woadkflak dfoi woadkflak dfoi woadkflak dfoi woadkflak dfoi woadkflak dfo lorem ipsumdfoi woadkflak dfoi woadkflak dfo lorem ipsumdfoi woadkflak dfoi woadkflak dfo lorem ipsumdfoi woadkflak dfoi woadkflak dfo lorem ipsumdfoi woadkflak dfoi woadkflak dfo lorem ipsumdfoi woadkflak dfoi woadkflak dfo lorem ipsumdfoi woadkflak dfoi woadkflak dfo lorem ipsumdfoi woadkflak dfoi woadkflak dfo lorem ipsumdfoi woadkflak dfoi woadkflak dfo lorem ipsum','2024-09-17 08:02:18',NULL,'0'),(46,5,22,'a','a','2024-09-17 09:01:25',NULL,'0'),(47,5,22,'a','a','2024-09-17 09:01:28',NULL,'0'),(48,5,22,'hgd','fg','2024-09-17 09:01:32',NULL,'0'),(49,5,22,'lç789','l7','2024-09-17 09:01:37',NULL,'0'),(50,2,22,'LOREMa','a','2024-09-18 08:07:11',NULL,'0'),(51,4,22,'oi','oioioioi','2024-09-18 08:12:24',NULL,'0'),(52,5,22,'asdasd','asd','2024-09-18 08:15:06',NULL,'0'),(53,2,22,'ADASSA','ASDADADSA','2024-09-18 08:15:12',NULL,'0'),(54,2,22,'sdf','fasd','2024-09-18 08:15:17',NULL,'0'),(55,4,22,'asdasd','dasda','2024-09-18 08:25:47',NULL,'0');
 /*!40000 ALTER TABLE `post` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -185,4 +182,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-13 11:38:23
+-- Dump completed on 2024-09-18  8:35:57
