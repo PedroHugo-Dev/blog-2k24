@@ -197,7 +197,7 @@
                                         <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
                                         <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
                                         <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
-                                        <p><small>De: <?php echo $post['topico_nome']; ?></small></p>
+                                        <p><small>Da categoria: <?php echo $post['topico_nome']; ?></small></p>
                                         
                                         <!-- Exibir comentários -->
                                         <div class="comentarios">
@@ -218,6 +218,9 @@
                                             $comentarios = $resultadoComentarios->fetchAll(PDO::FETCH_ASSOC);
                                             ?>
                                             <!-- Add Delete Button -->
+                                            <?php 
+                                                
+                                            ?>
                                             <form method="post" action="backend/remover_post.php" style="display:inline;">
                                                     <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
                                                     <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja remover este post?');">Remover</button>
@@ -270,57 +273,103 @@
 
     <?php include_once('../includes/footer.php'); ?>
 
-    <script>
-        let offset = 5; // Começa após os 5 posts iniciais
-        let loading = false;
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    var page = 1;
+    var loading = false;
 
-        // Função para carregar posts
-        function carregarPosts() {
-            if (loading) return; // Evita múltiplas requisições simultâneas
-            loading = true;
-            document.getElementById('loading').style.display = 'block';
+    function loadRandomPosts() {
+        if (loading) return;
+        loading = true;
+        $('#loading').show();
 
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'carregar_posts.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    const posts = JSON.parse(xhr.responseText);
-                    if (posts.length > 0) {
-                        const container = document.getElementById('posts-container');
-                        posts.forEach(post => {
-                            const postElement = document.createElement('article');
-                            postElement.classList.add('post');
-                            postElement.innerHTML = `
-                                <h2>${post.titulo}</h2>
-                                <p>${post.corpo}</p>
-                                <p><small>Postado em: ${post.data_criacao}</small></p>
-                                <p><small>De: ${post.topico_nome}</small></p>
-                            `;
-                            container.appendChild(postElement);
-                            container.appendChild(document.createElement('hr')).style.border = '1px solid #ffc107';
-                        });
-                        offset += posts.length; // Atualiza o offset
-                    } else {
-                        window.removeEventListener('scroll', onScroll); // Remove o listener se não houver mais posts
-                    }
+        $.ajax({
+            url: 'carregar_posts.php', // URL do script que carrega posts aleatórios
+            type: 'GET',
+            data: { page: page },
+            success: function(data) {
+                var posts = JSON.parse(data);
+                if (posts.length > 0) {
+                    $.each(posts, function(index, post) {
+                        var html = '<article>';
+                        html += '<h2>' + $('<div/>').text(post.titulo).html() + '</h2>';
+                        html += '<p>' + $('<div/>').text(post.corpo).html().replace(/\n/g, '<br>') + '</p>';
+
+
+                        html += '<p><small>Da categoria: ' + $('<div/>').text(post.topico_nome).html() + '</small></p>'; // Adicionando o nome do tópico
+                        html += '<p><small>Postado em: ' + post.data_criacao + '</small></p>';
+                        
+                        // Renderizando comentários
+                        html += '<div class="comments" id="comments-' + post.id_post + '">';
+                        html += loadComments(post.id_post); // Carregar comentários diretamente
+                        html += '</div>';
+                        
+                        // Formulário para adicionar comentário
+                        html += renderCommentForm(post.id_post, post.id_topico);
+                        html += '<form method="post" action="backend/remover_post.php" style="display:inline;">';
+                        html += '<input type="hidden" name="id_post" value="' + post.id_post + '">';
+                        html += '<button type="submit" class="btn btn-danger" onclick="return confirm(\'Tem certeza que deseja remover este post?\');">Remover</button>';
+                        html += '</form>';
+                        html += '</article><hr style="border: 1px solid #ffc107;">';
+                        $('#posts').append(html);
+                    });
+                    page++;
+                } else {
+                    $(window).off('scroll', onScroll);
                 }
-                document.getElementById('loading').style.display = 'none';
                 loading = false;
-            };
-            xhr.send(`offset=${offset}`);
-        }
-
-        // Função para verificar se o usuário chegou ao fim da página
-        function onScroll() {
-            if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight) {
-                carregarPosts();
+                $('#loading').hide();
             }
+        });
+    }
+
+    function loadComments(postId) {
+        var commentsHtml = ''; // HTML para os comentários
+        $.ajax({
+            url: 'load_comments.php',
+            type: 'GET',
+            data: { id_post: postId },
+            async: false, // Faz com que a chamada seja síncrona
+            success: function(data) {
+                var comments = JSON.parse(data);
+                if (comments.length > 0) {
+                    $.each(comments, function(index, comment) {
+                        commentsHtml += '<div class="comentario">';
+                        commentsHtml += '<p><strong>' + $('<div/>').text(comment.nome_user).html() + ':</strong></p>';
+                        commentsHtml += '<p>' + $('<div/>').text(comment.corpo).html().replace(/\n/g, '<br>') + '</p>';
+                        commentsHtml += '<p><small>Comentário postado em: ' + comment.data_criacao + '</small></p>';
+                        commentsHtml += '</div>';
+                    });
+                } else {
+                    commentsHtml += '<p>Nenhum comentário encontrado.</p>';
+                }
+            }
+        });
+        return commentsHtml; // Retorna os comentários gerados
+    }
+
+    function renderCommentForm(postId, topicoId) {
+        return `
+            <form method="post" action="adicionar_comentario.php">
+                <input type="hidden" name="id_post" value="${postId}">
+                <input type="hidden" name="id_topico" value="${topicoId}">
+                <div class="form-group">
+                    <label for="comentario">Adicionar um comentário:</label>
+                    <textarea id="comentario" name="texto_comentario" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Comentar</button>
+            </form>
+        `;
+    }
+
+    function onScroll() {
+        if ($(window).scrollTop() + $(window).height() + 100 > $(document).height()) {
+            loadRandomPosts();
         }
+    }
 
-        // Adiciona o evento de rolagem
-        window.addEventListener('scroll', onScroll);
-
-        // Carrega posts iniciais
-        carregarPosts();
-    </script>
+    $(window).on('scroll', onScroll);
+    loadRandomPosts();  // Carregar posts aleatórios inicialmente
+});
+</script>

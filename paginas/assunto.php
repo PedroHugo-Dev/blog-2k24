@@ -170,22 +170,30 @@ $(document).ready(function() {
         $.ajax({
             url: 'load_posts.php',
             type: 'GET',
-            data: {
-                assunto: assunto,
-                page: page
-            },
+            data: { assunto: assunto, page: page },
             success: function(data) {
                 var posts = JSON.parse(data);
                 if (posts.length > 0) {
-                    var html = '';
                     $.each(posts, function(index, post) {
-                        html += '<article>';
+                        var html = '<article>';
                         html += '<h2>' + $('<div/>').text(post.titulo).html() + '</h2>';
                         html += '<p>' + $('<div/>').text(post.corpo).html().replace(/\n/g, '<br>') + '</p>';
                         html += '<p><small>Postado em: ' + post.data_criacao + '</small></p>';
+                        
+                        // Renderizando comentários
+                        html += '<div class="comments" id="comments-' + post.id_post + '">';
+                        html += loadComments(post.id_post); // Carregar comentários diretamente
+                        html += '</div>';
+                        
+                        // Formulário para adicionar comentário
+                        html += renderCommentForm(post.id_post, post.id_topico);
+                        html += '<form method="post" action="backend/remover_post.php" style="display:inline;">';
+                        html += '<input type="hidden" name="id_post" value="' + post.id_post + '">';
+                        html += '<button type="submit" class="btn btn-danger" onclick="return confirm(\'Tem certeza que deseja remover este post?\');">Remover</button>';
+                        html += '</form>';
                         html += '</article><hr style="border: 1px solid #ffc107;">';
+                        $('#posts').append(html);
                     });
-                    $('#posts').append(html);
                     page++;
                 } else {
                     $(window).off('scroll', onScroll);
@@ -194,6 +202,45 @@ $(document).ready(function() {
                 $('#loading').hide();
             }
         });
+    }
+
+    function loadComments(postId) {
+        var commentsHtml = ''; // HTML para os comentários
+        $.ajax({
+            url: 'load_comments.php',
+            type: 'GET',
+            data: { id_post: postId },
+            async: false, // Faz com que a chamada seja síncrona
+            success: function(data) {
+                var comments = JSON.parse(data);
+                if (comments.length > 0) {
+                    $.each(comments, function(index, comment) {
+                        commentsHtml += '<div class="comentario">';
+                        commentsHtml += '<p><strong>' + $('<div/>').text(comment.nome_user).html() + ':</strong></p>';
+                        commentsHtml += '<p>' + $('<div/>').text(comment.corpo).html().replace(/\n/g, '<br>') + '</p>';
+                        commentsHtml += '<p><small>Comentário postado em: ' + comment.data_criacao + '</small></p>';
+                        commentsHtml += '</div>';
+                    });
+                } else {
+                    commentsHtml += '<p>Nenhum comentário encontrado.</p>';
+                }
+            }
+        });
+        return commentsHtml; // Retorna os comentários gerados
+    }
+
+    function renderCommentForm(postId, topicoId) {
+        return `
+            <form method="post" action="adicionar_comentario.php">
+                <input type="hidden" name="id_post" value="${postId}">
+                <input type="hidden" name="id_topico" value="${topicoId}">
+                <div class="form-group">
+                    <label for="comentario">Adicionar um comentário:</label>
+                    <textarea id="comentario" name="texto_comentario" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Comentar</button>
+            </form>
+        `;
     }
 
     function onScroll() {

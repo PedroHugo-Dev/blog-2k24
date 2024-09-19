@@ -1,22 +1,27 @@
 <?php
-include '../config/conexao.php'; // Inclua seu arquivo de conexão com o banco de dados
+include_once('../config/conexao.php');
 
-// Recebe o número de posts a serem retornados e a página atual
-$limit = 5;
-$offset = isset($_POST['offset']) ? (int)$_POST['offset'] : 0;
+// Sanitização de entrada
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$posts_per_page = 5;  // Número de posts por página
 
-// Consulta SQL para buscar posts aleatoriamente
-$sql = "SELECT * FROM post
-        ORDER BY RAND()
-        LIMIT :limit OFFSET :offset";
+// Calculando o offset para a paginação
+$offset = ($page - 1) * $posts_per_page;
 
-$stmt = $conect->prepare($sql);
-$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-$stmt->execute();
+// Consulta para obter posts aleatórios com o nome do tópico
+$query = $conect->prepare("
+    SELECT p.*, t.nome AS topico_nome
+    FROM post p
+    JOIN topico t ON p.id_topico = t.id_topico
+    ORDER BY RAND() 
+    LIMIT :offset, :limit
+");
 
-$posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$query->bindValue(':offset', $offset, PDO::PARAM_INT);
+$query->bindValue(':limit', $posts_per_page, PDO::PARAM_INT);
+$query->execute();
+$posts = $query->fetchAll(PDO::FETCH_ASSOC);
 
-// Retorna os posts como JSON
+// Retorna os posts em formato JSON
 echo json_encode($posts);
 ?>
