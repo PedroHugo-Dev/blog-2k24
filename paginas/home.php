@@ -92,8 +92,14 @@ if ($acao === 'bemvindo') {
    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
    padding: 20px;
    margin-bottom: 30px; /* Adiciona espaçamento entre artigos */
+   transition: box-shadow 0.3s ease;
 }
 
+.posts article:hover {
+   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Títulos dos posts */
 .posts h2 {
    font-size: 22px;
    margin-top: 0;
@@ -101,12 +107,15 @@ if ($acao === 'bemvindo') {
    font-weight: 600;
 }
 
+/* Corpo dos posts */
 .posts p {
    line-height: 1.8;
    color: #495057;
    font-size: 16px;
+   margin: 10px 0; /* Espaçamento vertical */
 }
 
+/* Informações adicionais */
 .posts small {
    display: block;
    margin-top: 10px;
@@ -114,9 +123,17 @@ if ($acao === 'bemvindo') {
    font-size: 14px;
 }
 
-/* Adicionando espaçamento extra para o último artigo */
-.posts article:last-of-type {
-   margin-bottom: 0;
+/* Estilizando os comentários */
+.comentarios {
+   background-color: #f8f9fa; /* Fundo claro para os comentários */
+   border-left: 4px solid #ffc107; /* Borda amarela */
+   padding: 10px 15px; /* Padding interno */
+   margin-top: 15px; /* Espaçamento acima */
+   border-radius: 5px; /* Bordas arredondadas */
+}
+
+.comentario {
+   margin-bottom: 10px; /* Espaçamento entre comentários */
 }
 
 /* Melhorando a responsividade */
@@ -134,7 +151,7 @@ if ($acao === 'bemvindo') {
    }
 
    hr {
-       border: 1px solid #00ff00; /* Green color */
+       border: 1px solid #ffc107; /* Borda amarela */
    }
 }
 
@@ -163,6 +180,14 @@ if ($acao === 'bemvindo') {
        font-size: 12px;
    }
 }
+
+/* Estilizando o container dos posts */
+.posts {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Espaçamento entre os posts */
+}
+
 </style>
 
 <!-- Content Wrapper. Contains page content -->
@@ -180,86 +205,88 @@ if ($acao === 'bemvindo') {
 
     <!-- Main content -->
     <section class="content">
-      <div class="container-fluid">
+    <div class="container-fluid">
         <div class="row">
-          <!-- left column -->
-          <div class="col-md-12">
-            <!-- general form elements -->
-            <div class="card card-primary">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-body">
+                        <div class="posts" id="posts">
+                            <?php if ($postagens): ?>
+                                <?php foreach ($postagens as $post): ?>
+                                    <article>
+                                        <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
+                                        <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
+                                        <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
+                                        <p><small>De: <?php echo $post['topico_nome']; ?></small></p>
 
-              <!-- /.card-header -->
-              <div class="card-body">
-                <div id="posts" class="posts">
-                    <!-- Os posts iniciais serão inseridos aqui -->
-                    <?php if ($postagens): ?>
-                            <?php foreach ($postagens as $post): ?>
-                                <article class="post">
-                                    <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
-                                    <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
-                                    <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
-                                    <p><small>De: <?php echo $post['topico_nome']; ?></small></p>
-                                    
-                                    <!-- Exibir comentários -->
-                                    <div class="comentarios">
-                                        <?php
-                                        // Obter e exibir comentários para o post
-                                        $idPost = $post['id_post'];
-                                        $selectComentarios = "
-                                            SELECT c.*, u.nome_user
-                                            FROM comentario c
-                                            JOIN tb_user u ON c.id_user = u.id_user
-                                            WHERE c.id_post = :idPost
-                                            ORDER BY c.data_criacao ASC
-                                        ";
-                                        
-                                        $resultadoComentarios = $conect->prepare($selectComentarios);
-                                        $resultadoComentarios->bindParam(':idPost', $idPost, PDO::PARAM_INT);
-                                        $resultadoComentarios->execute();
-                                        $comentarios = $resultadoComentarios->fetchAll(PDO::FETCH_ASSOC);
-                                        ?>
+                                        <button class="btn btn-secondary" onclick="toggleComentarios(<?php echo $post['id_post']; ?>)">Exibir Comentários</button>
 
-                                        <?php if ($comentarios): ?>
-                                            <?php foreach ($comentarios as $comentario): ?>
-                                                <div class="comentario">
-                                                    <p><strong><?php echo htmlspecialchars($comentario['nome_user']); ?>:</strong></p>
-                                                    <p><?php echo nl2br(htmlspecialchars($comentario['corpo'])); ?></p>
-                                                    <p><small>Comentário postado em: <?php echo $comentario['data_criacao']; ?></small></p>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <p>Nenhum comentário encontrado.</p>
-                                        <?php endif; ?>
-                                    </div>
-                                    <!-- Formulário para adicionar comentários -->
-                                                <form method="post" action="adicionar_comentario.php">
-                                                    <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
-                                                    <input type="hidden" name="id_topico" value="<?php echo $post['id_topico']; ?>">
-                                                    <div class="form-group">
-                                                        <label for="comentario">Adicionar um comentário:</label>
-                                                        <textarea id="comentario" name="texto_comentario" class="form-control" rows="3" required></textarea>
+                                        <div class="comentarios" id="comentarios-<?php echo $post['id_post']; ?>" style="display: none;">
+                                            <?php
+                                            // Obter e exibir comentários para o post
+                                            $idPost = $post['id_post'];
+                                            $selectComentarios = "
+                                                SELECT c.*, u.nome_user
+                                                FROM comentario c
+                                                JOIN tb_user u ON c.id_user = u.id_user
+                                                WHERE c.id_post = :idPost
+                                                ORDER BY c.data_criacao ASC
+                                            ";
+
+                                            $resultadoComentarios = $conect->prepare($selectComentarios);
+                                            $resultadoComentarios->bindParam(':idPost', $idPost, PDO::PARAM_INT);
+                                            $resultadoComentarios->execute();
+                                            $comentarios = $resultadoComentarios->fetchAll(PDO::FETCH_ASSOC);
+                                            ?>
+
+                                            <?php if ($comentarios): ?>
+                                                <?php foreach ($comentarios as $comentario): ?>
+                                                    <div class="comentario">
+                                                        <p><strong><?php echo htmlspecialchars($comentario['nome_user']); ?>:</strong></p>
+                                                        <p><?php echo nl2br(htmlspecialchars($comentario['corpo'])); ?></p>
+                                                        <p><small>Comentário postado em: <?php echo $comentario['data_criacao']; ?></small></p>
                                                     </div>
-                                                    <button type="submit" class="btn btn-primary">Comentar</button>
-                                                </form>
+                                                <?php endforeach; ?>
+                                            <?php else: ?>
+                                                <p>Nenhum comentário encontrado.</p>
+                                            <?php endif; ?>
 
-                                    <hr style="border: 1px solid #ffc107;">
-                                </article>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p>Nenhum post encontrado.</p>
-                        <?php endif; ?>
-                        
+                                            <form method="post" action="adicionar_comentario.php">
+                                                <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
+                                                <input type="hidden" name="id_topico" value="<?php echo $post['id_topico']; ?>">
+                                                <div class="form-group">
+                                                    <label for="comentario">Adicionar um comentário:</label>
+                                                    <textarea id="comentario" name="texto_comentario" class="form-control" rows="3" required></textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Comentar</button>
+                                            </form>
+                                        </div>
+                                        <hr style="border: 1px solid #ffc107;">
+                                    </article>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p>Nenhum post encontrado.</p>
+                            <?php endif; ?>
+                        </div>
+                        <div id="loading" style="display: none;"></div>
+                    </div>
                 </div>
-                <div id="loading" style="display: none;"></div>
-              </div>
-              <!-- /.card-body -->
             </div>
-            <!-- /.card -->
-          </div>
-          <!--/.col (right) -->
         </div>
-        <!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </section>
+    </div><!-- /.container-fluid -->
+</section>
+
+<script>
+    function toggleComentarios(postId) {
+        const comentariosDiv = document.getElementById(`comentarios-${postId}`);
+        if (comentariosDiv.style.display === 'none') {
+            comentariosDiv.style.display = 'block';
+        } else {
+            comentariosDiv.style.display = 'none';
+        }
+    }
+</script>
+
     <!-- /.content -->
 </div>
 

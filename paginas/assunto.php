@@ -39,7 +39,6 @@ if ($topicoResult) {
    padding: 20px;
 }
 
-/* Estilizando cada artigo */
 .posts article {
    background-color: #ffffff;
    border-radius: 8px;
@@ -68,60 +67,20 @@ if ($topicoResult) {
    font-size: 14px;
 }
 
-/* Adicionando espaçamento extra para o último artigo */
-.posts article:last-of-type {
-   margin-bottom: 0;
+.comentarios {
+   background-color: #f8f9fa; /* Fundo claro para os comentários */
+   border-left: 4px solid #ffc107; /* Borda amarela */
+   padding: 10px 15px; /* Padding interno */
+   margin-top: 15px; /* Espaçamento acima */
+   border-radius: 5px; /* Bordas arredondadas */
 }
 
-/* Melhorando a responsividade */
-@media (max-width: 992px) {
-   .content-header h1 {
-       font-size: 24px;
-   }
-
-   .card-header {
-       font-size: 18px;
-   }
-
-   .posts h2 {
-       font-size: 20px;
-   }
-
-   hr {
-       border: 1px solid #00ff00; /* Green color */
-   }
-}
-
-@media (max-width: 768px) {
-   .card-body {
-       padding: 15px;
-   }
-
-   .content-header h1 {
-       font-size: 20px;
-   }
-
-   .card-header {
-       font-size: 16px;
-   }
-
-   .posts h2 {
-       font-size: 18px;
-   }
-
-   .posts p {
-       font-size: 14px;
-   }
-
-   .posts small {
-       font-size: 12px;
-   }
+.comentario {
+   margin-bottom: 10px; /* Espaçamento entre comentários */
 }
 </style>
 
-<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -132,7 +91,6 @@ if ($topicoResult) {
         </div><!-- /.container-fluid -->
     </section>
 
-    <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
             <div class="row">
@@ -140,69 +98,80 @@ if ($topicoResult) {
                     <div class="card card-primary">
                         <div class="card-body">
                             <div class="posts" id="posts">
-                                <!-- Posts serão carregados aqui -->
+                                <?php if ($posts): ?>
+                                    <?php foreach ($posts as $post): ?>
+                                        <article>
+                                            <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
+                                            <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
+                                            <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
+                                            
+                                            <button class="btn btn-secondary" onclick="toggleComentarios(<?php echo $post['id_post']; ?>)">Exibir Comentários</button>
+                                            
+                                            <div class="comentarios" id="comentarios-<?php echo $post['id_post']; ?>" style="display: none;">
+                                                <?php
+                                                // Obter e exibir comentários para o post
+                                                $idPost = $post['id_post'];
+                                                $selectComentarios = "
+                                                    SELECT c.*, u.nome_user
+                                                    FROM comentario c
+                                                    JOIN tb_user u ON c.id_user = u.id_user
+                                                    WHERE c.id_post = :idPost
+                                                    ORDER BY c.data_criacao ASC
+                                                ";
 
-                            
+                                                $resultadoComentarios = $conect->prepare($selectComentarios);
+                                                $resultadoComentarios->bindParam(':idPost', $idPost, PDO::PARAM_INT);
+                                                $resultadoComentarios->execute();
+                                                $comentarios = $resultadoComentarios->fetchAll(PDO::FETCH_ASSOC);
+                                                ?>
+
+                                                <?php if ($comentarios): ?>
+                                                    <?php foreach ($comentarios as $comentario): ?>
+                                                        <div class="comentario">
+                                                            <p><strong><?php echo htmlspecialchars($comentario['nome_user']); ?>:</strong></p>
+                                                            <p><?php echo nl2br(htmlspecialchars($comentario['corpo'])); ?></p>
+                                                            <p><small>Comentário postado em: <?php echo $comentario['data_criacao']; ?></small></p>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <p>Nenhum comentário encontrado.</p>
+                                                <?php endif; ?>
+
+                                                <form method="post" action="adicionar_comentario.php">
+                                                    <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
+                                                    <input type="hidden" name="id_topico" value="<?php echo $post['id_topico']; ?>">
+                                                    <div class="form-group">
+                                                        <label for="comentario">Adicionar um comentário:</label>
+                                                        <textarea id="comentario" name="texto_comentario" class="form-control" rows="3" required></textarea>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Comentar</button>
+                                                </form>
+                                            </div>
+                                            <hr style="border: 1px solid #ffc107;">
+                                        </article>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p>Nenhum post encontrado.</p>
+                                <?php endif; ?>
                             </div>
                             <div id="loading" style="display: none;"></div>
                         </div>
-                        
                     </div>
                 </div>
-               
             </div>
         </div><!-- /.container-fluid -->
     </section>
 </div>
+
 <?php include_once('../includes/footer.php'); ?>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
-$(document).ready(function() {
-    var page = 1;
-    var loading = false;
-    var assunto = "<?php echo htmlspecialchars($acao); ?>";
-
-    function loadPosts() {
-        if (loading) return;
-        loading = true;
-        $('#loading').show();
-
-        $.ajax({
-            url: 'load_posts.php',
-            type: 'GET',
-            data: {
-                assunto: assunto,
-                page: page
-            },
-            success: function(data) {
-                var posts = JSON.parse(data);
-                if (posts.length > 0) {
-                    var html = '';
-                    $.each(posts, function(index, post) {
-                        html += '<article>';
-                        html += '<h2>' + $('<div/>').text(post.titulo).html() + '</h2>';
-                        html += '<p>' + $('<div/>').text(post.corpo).html().replace(/\n/g, '<br>') + '</p>';
-                        html += '<p><small>Postado em: ' + post.data_criacao + '</small></p>';
-                        html += '</article><hr style="border: 1px solid #ffc107;">';
-                    });
-                    $('#posts').append(html);
-                    page++;
-                } else {
-                    $(window).off('scroll', onScroll);
-                }
-                loading = false;
-                $('#loading').hide();
-            }
-        });
+function toggleComentarios(postId) {
+    const comentariosDiv = document.getElementById(`comentarios-${postId}`);
+    if (comentariosDiv.style.display === 'none') {
+        comentariosDiv.style.display = 'block';
+    } else {
+        comentariosDiv.style.display = 'none';
     }
-
-    function onScroll() {
-        if ($(window).scrollTop() + $(window).height() + 100 > $(document).height()) {
-            loadPosts();
-        }
-    }
-
-    $(window).on('scroll', onScroll);
-    loadPosts();  // Carregar posts inicialmente
-});
+}
 </script>
