@@ -275,7 +275,6 @@ if ($acao === 'bemvindo') {
         </div>
     </div><!-- /.container-fluid -->
 </section>
-
 <script>
     function toggleComentarios(postId) {
         const comentariosDiv = document.getElementById(`comentarios-${postId}`);
