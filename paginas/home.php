@@ -219,7 +219,7 @@ if ($acao === 'bemvindo') {
                                         <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
                                         <p><small>De: <?php echo $post['topico_nome']; ?></small></p>
 
-                                        <button class="btn btn-secondary" onclick="toggleComentarios(<?php echo $post['id_post']; ?>)">Exibir Comentários</button>
+                                        <button class="btn btn-primary" onclick="toggleComentarios(<?php echo $post['id_post']; ?>)">Exibir Comentários</button>
 
                                         <div class="comentarios" id="comentarios-<?php echo $post['id_post']; ?>" style="display: none;">
                                             <?php
