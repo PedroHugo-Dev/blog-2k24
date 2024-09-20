@@ -15,9 +15,49 @@ $paginas = [
 // Verificar se a ação existe no array, caso contrário, usar a página padrão
 $pagina_incluir = isset($paginas[$acao]) ? $paginas[$acao] : $paginas['bemvindo'];
 
-// Incluir a página correspondente
+// Lógica para deletar post
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
+    if ($_POST['acao'] === 'deletar' && isset($_POST['id_post'])) {
+        $id_post = filter_input(INPUT_POST, 'id_post', FILTER_VALIDATE_INT);
+        if ($id_post) {
+            try {
+                $deletePost = "DELETE FROM post WHERE id_post = :id_post";
+                $stmt = $conect->prepare($deletePost);
+                $stmt->bindParam(':id_post', $id_post, PDO::PARAM_INT);
+                $stmt->execute();
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit();
+            } catch (PDOException $e) {
+                error_log("ERRO AO DELETAR POST: " . $e->getMessage());
+            }
+        }
+    }
+
+    // Lógica para atualizar post
+    if ($_POST['acao'] === 'atualizar' && isset($_POST['titulo'])) {
+        $id_post = filter_input(INPUT_POST, 'id_post', FILTER_VALIDATE_INT);
+        $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
+        $corpo = filter_input(INPUT_POST, 'corpo', FILTER_SANITIZE_STRING);
+
+        if ($id_post && $titulo && $corpo) {
+            try {
+                $updatePost = "UPDATE post SET titulo = :titulo, corpo = :corpo WHERE id_post = :id_post";
+                $stmt = $conect->prepare($updatePost);
+                $stmt->bindParam(':titulo', $titulo);
+                $stmt->bindParam(':corpo', $corpo);
+                $stmt->bindParam(':id_post', $id_post);
+                $stmt->execute();
+                header("Location: index.php?acao=bemvindo");
+                exit();
+            } catch (PDOException $e) {
+                error_log("ERRO AO ATUALIZAR POST: " . $e->getMessage());
+            }
+        }
+    }
+}
+
+// Continue com a lógica existente
 if ($acao === 'bemvindo') {
-    // Obtém o ID do usuário logado
     $usuarioLogado = $_SESSION['loginUser'];
 
     try {
@@ -41,7 +81,6 @@ if ($acao === 'bemvindo') {
         $topicosIds = array_column($topicosParticipa, 'id_topico');
 
         if ($topicosIds) {
-            // Se o usuário participa de tópicos, buscar postagens desses tópicos
             $in = str_repeat('?,', count($topicosIds) - 1) . '?';
             $selectPostagens = "
                 SELECT p.*, t.nome as topico_nome
@@ -55,9 +94,7 @@ if ($acao === 'bemvindo') {
             $resultadoPostagens = $conect->prepare($selectPostagens);
             $resultadoPostagens->execute($topicosIds);
             $postagens = $resultadoPostagens->fetchAll(PDO::FETCH_ASSOC);
-
         } else {
-            // Se o usuário não participa de tópicos, buscar postagens de tópicos aleatórios
             $selectPostagensAleatorias = "
                 SELECT p.*, t.nome as topico_nome
                 FROM post p
@@ -72,7 +109,7 @@ if ($acao === 'bemvindo') {
         }
     } catch (PDOException $e) {
         error_log("ERRO AO BUSCAR POSTAGENS: " . $e->getMessage());
-        $postagens = []; // Definido como vazio para evitar erros na exibição
+        $postagens = [];
     }
 } else {
     include_once($pagina_incluir);
@@ -91,7 +128,7 @@ if ($acao === 'bemvindo') {
    border-radius: 8px;
    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
    padding: 20px;
-   margin-bottom: 30px; /* Adiciona espaçamento entre artigos */
+   margin-bottom: 30px;
    transition: box-shadow 0.3s ease;
 }
 
@@ -112,7 +149,7 @@ if ($acao === 'bemvindo') {
    line-height: 1.8;
    color: #495057;
    font-size: 16px;
-   margin: 10px 0; /* Espaçamento vertical */
+   margin: 10px 0;
 }
 
 /* Informações adicionais */
@@ -125,15 +162,15 @@ if ($acao === 'bemvindo') {
 
 /* Estilizando os comentários */
 .comentarios {
-   background-color: #f8f9fa; /* Fundo claro para os comentários */
-   border-left: 4px solid #ffc107; /* Borda amarela */
-   padding: 10px 15px; /* Padding interno */
-   margin-top: 15px; /* Espaçamento acima */
-   border-radius: 5px; /* Bordas arredondadas */
+   background-color: #f8f9fa;
+   border-left: 4px solid #ffc107;
+   padding: 10px 15px;
+   margin-top: 15px;
+   border-radius: 5px;
 }
 
 .comentario {
-   margin-bottom: 10px; /* Espaçamento entre comentários */
+   margin-bottom: 10px;
 }
 
 /* Melhorando a responsividade */
@@ -151,7 +188,7 @@ if ($acao === 'bemvindo') {
    }
 
    hr {
-       border: 1px solid #ffc107; /* Borda amarela */
+       border: 1px solid #ffc107;
    }
 }
 
@@ -185,9 +222,8 @@ if ($acao === 'bemvindo') {
 .posts {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Espaçamento entre os posts */
+    gap: 20px;
 }
-
 </style>
 
 <!-- Content Wrapper. Contains page content -->
@@ -200,7 +236,7 @@ if ($acao === 'bemvindo') {
             <h1>Blog - Home</h1>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
+      </div>
     </section>
 
     <!-- Main content -->
@@ -220,6 +256,34 @@ if ($acao === 'bemvindo') {
                                         <p><small>De: <?php echo $post['topico_nome']; ?></small></p>
 
                                         <button class="btn btn-primary" onclick="toggleComentarios(<?php echo $post['id_post']; ?>)">Exibir Comentários</button>
+
+                                        <button class="btn btn-secondary" onclick="openEditForm(<?php echo $post['id_post']; ?>)" style="margin-left: 10px;">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </button>
+
+                                        <div id="edit-form-<?php echo $post['id_post']; ?>" style="display: none;">
+                                            <form method="post" action="">
+                                                <input type="hidden" name="acao" value="atualizar">
+                                                <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
+                                                <div class="form-group">
+                                                    <label for="titulo">Título:</label>
+                                                    <input type="text" name="titulo" value="<?php echo htmlspecialchars($post['titulo']); ?>" required class="form-control">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="corpo">Conteúdo:</label>
+                                                    <textarea name="corpo" required class="form-control"><?php echo htmlspecialchars($post['corpo']); ?></textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Atualizar</button>
+                                            </form>
+                                        </div>
+
+                                        <form method="post" action="" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar?');">
+                                            <input type="hidden" name="acao" value="deletar">
+                                            <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
+                                            <button type="submit" class="btn btn-danger" style="margin-left: 10px;">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
 
                                         <div class="comentarios" id="comentarios-<?php echo $post['id_post']; ?>" style="display: none;">
                                             <?php
@@ -273,75 +337,19 @@ if ($acao === 'bemvindo') {
                 </div>
             </div>
         </div>
-    </div><!-- /.container-fluid -->
-</section>
+    </div>
+    </section>
+</div>
+
 <script>
     function toggleComentarios(postId) {
         const comentariosDiv = document.getElementById(`comentarios-${postId}`);
-        if (comentariosDiv.style.display === 'none') {
-            comentariosDiv.style.display = 'block';
-        } else {
-            comentariosDiv.style.display = 'none';
-        }
+        comentariosDiv.style.display = comentariosDiv.style.display === 'none' ? 'block' : 'none';
+    }
+    function openEditForm(postId) {
+        const editForm = document.getElementById(`edit-form-${postId}`);
+        editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';
     }
 </script>
-
-    <!-- /.content -->
-</div>
 
 <?php include_once('../includes/footer.php'); ?>
-
-<script>
-    let offset = 5; // Começa após os 5 posts iniciais
-    let loading = false;
-
-    // Função para carregar posts
-    function carregarPosts() {
-        if (loading) return; // Evita múltiplas requisições simultâneas
-        loading = true;
-        document.getElementById('loading').style.display = 'block';
-
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'carregar_posts.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                const posts = JSON.parse(xhr.responseText);
-                if (posts.length > 0) {
-                    const container = document.getElementById('posts-container');
-                    posts.forEach(post => {
-                        const postElement = document.createElement('article');
-                        postElement.classList.add('post');
-                        postElement.innerHTML = `
-                            <h2>${post.titulo}</h2>
-                            <p>${post.corpo}</p>
-                            <p><small>Postado em: ${post.data_criacao}</small></p>
-                            <p><small>De: ${post.topico_nome}</small></p>
-                        `;
-                        container.appendChild(postElement);
-                        container.appendChild(document.createElement('hr')).style.border = '1px solid #ffc107';
-                    });
-                    offset += posts.length; // Atualiza o offset
-                } else {
-                    window.removeEventListener('scroll', onScroll); // Remove o listener se não houver mais posts
-                }
-            }
-            document.getElementById('loading').style.display = 'none';
-            loading = false;
-        };
-        xhr.send(`offset=${offset}`);
-    }
-
-    // Função para verificar se o usuário chegou ao fim da página
-    function onScroll() {
-        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight) {
-            carregarPosts();
-        }
-    }
-
-    // Adiciona o evento de rolagem
-    window.addEventListener('scroll', onScroll);
-
-    // Carrega posts iniciais
-    carregarPosts();
-</script>
