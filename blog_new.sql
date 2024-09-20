@@ -36,7 +36,7 @@ CREATE TABLE `comentario` (
   KEY `fk_comentario_tb_user1_idx` (`id_user`),
   CONSTRAINT `fk_comentario_post1` FOREIGN KEY (`id_post`, `id_topico`) REFERENCES `post` (`id_post`, `id_topico`) ON DELETE CASCADE,
   CONSTRAINT `fk_comentario_tb_user1` FOREIGN KEY (`id_user`) REFERENCES `tb_user` (`id_user`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `comentario` (
 
 LOCK TABLES `comentario` WRITE;
 /*!40000 ALTER TABLE `comentario` DISABLE KEYS */;
-INSERT INTO `comentario` VALUES (16,'oi',65,4,22,'2024-09-19',NULL),(17,'oi',65,4,22,'2024-09-19',NULL),(18,'ol',65,4,22,'2024-09-19',NULL),(19,'oioi',66,2,22,'2024-09-19',NULL);
+INSERT INTO `comentario` VALUES (34,'Olá',78,6,22,'2024-09-20',NULL),(35,'oi',78,6,22,'2024-09-20',NULL);
 /*!40000 ALTER TABLE `comentario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -100,7 +100,7 @@ CREATE TABLE `post` (
   KEY `fk_post_tb_user1_idx` (`id_user`),
   CONSTRAINT `fk_post_tb_user1` FOREIGN KEY (`id_user`) REFERENCES `tb_user` (`id_user`) ON DELETE CASCADE,
   CONSTRAINT `fk_post_topico` FOREIGN KEY (`id_topico`) REFERENCES `topico` (`id_topico`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -109,7 +109,7 @@ CREATE TABLE `post` (
 
 LOCK TABLES `post` WRITE;
 /*!40000 ALTER TABLE `post` DISABLE KEYS */;
-INSERT INTO `post` VALUES (57,5,22,'a','a','2024-09-19 10:13:37',NULL,'0'),(58,5,22,'a','a','2024-09-19 10:13:41',NULL,'0'),(59,5,22,'a','a','2024-09-19 10:13:48',NULL,'0'),(60,5,22,'a','a','2024-09-19 10:13:51',NULL,'0'),(61,5,22,'b','b','2024-09-19 10:13:54',NULL,'0'),(63,5,22,'d','d','2024-09-19 10:14:16',NULL,'0'),(65,4,22,'OLA MUNDO','OLA','2024-09-19 10:43:42',NULL,'0'),(66,2,22,'fasdsa','asd','2024-09-19 10:49:54',NULL,'0'),(67,2,22,'fafds','gsafdg','2024-09-19 11:06:12',NULL,'0');
+INSERT INTO `post` VALUES (78,6,22,'oi','lixo','2024-09-20 15:21:01',NULL,'0');
 /*!40000 ALTER TABLE `post` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -139,7 +139,7 @@ CREATE TABLE `tb_user` (
 
 LOCK TABLES `tb_user` WRITE;
 /*!40000 ALTER TABLE `tb_user` DISABLE KEYS */;
-INSERT INTO `tb_user` VALUES (21,'adasd','asdas','asdasd','4gsdf','2024-08-29',0),(22,'avatar-padrao.png','a','a@a','$2y$10$Lf6yDCVAP2ToHSAWnoJHO.B/SIQmcqY5zcqHET.ZseQYxls.JDXjC','2024-08-30',0),(23,'avatar-padrao.png','b','b@b','$2y$10$pihqNg0p/gXWHOEawk51he.NmBBvIdcre9DcysBW83KGgX/2z6fOG','2024-09-13',0),(24,'avatar-padrao.png','c','c@c','$2y$10$6wV04Swb/m7LxtzuGPW22.fMLEWzhCpIwvhE5SC9W.Lxhhrb1hx56','2024-09-13',0),(25,'avatar-padrao.png','b','b@b','$2y$10$t3RR8gjxqzNXYt.ikAtDYekhwPo4ZSGxSCnAfrrnz0.CxZKe3Q9.i','2024-09-19',0);
+INSERT INTO `tb_user` VALUES (21,'adasd','asdas','asdasd','4gsdf','2024-08-29',0),(22,'avatar-padrao.png','a','a@a','$2y$10$Lf6yDCVAP2ToHSAWnoJHO.B/SIQmcqY5zcqHET.ZseQYxls.JDXjC','2024-08-30',1),(23,'avatar-padrao.png','b','b@b','$2y$10$pihqNg0p/gXWHOEawk51he.NmBBvIdcre9DcysBW83KGgX/2z6fOG','2024-09-13',0),(24,'avatar-padrao.png','c','c@c','$2y$10$6wV04Swb/m7LxtzuGPW22.fMLEWzhCpIwvhE5SC9W.Lxhhrb1hx56','2024-09-13',0);
 /*!40000 ALTER TABLE `tb_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -182,4 +182,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-19 11:35:58
+-- Dump completed on 2024-09-20 16:44:49
