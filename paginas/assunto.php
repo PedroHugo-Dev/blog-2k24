@@ -73,6 +73,18 @@ if ($topicoResult) {
    margin-bottom: 0;
 }
 
+.comentarios {
+   background-color: #f8f9fa; /* Fundo claro para os comentários */
+   border-left: 4px solid #ffc107; /* Borda amarela */
+   padding: 10px 15px; /* Padding interno */
+   margin-top: 15px; /* Espaçamento acima */
+   border-radius: 5px; /* Bordas arredondadas */
+}
+
+.comentario {
+   margin-bottom: 10px; /* Espaçamento entre comentários */
+}
+
 /* Melhorando a responsividade */
 @media (max-width: 992px) {
    .content-header h1 {
@@ -155,12 +167,24 @@ if ($topicoResult) {
     </section>
 </div>
 <?php include_once('../includes/footer.php'); ?>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
     var page = 1;
     var loading = false;
     var assunto = "<?php echo htmlspecialchars($acao); ?>";
+    var usuarioLogado = "<?php echo htmlspecialchars($id_user); ?>"; // Usuário logado
+    var adm = "<?php echo htmlspecialchars($adm); ?>"; // Usuário logado
+
+    function toggleComentarios(postId) {
+        var comentariosDiv = document.getElementById(`comments-${postId}`);
+        if (comentariosDiv.style.display === 'none') {
+            comentariosDiv.style.display = 'block';
+        } else {
+            comentariosDiv.style.display = 'none';
+        }
+    }
 
     function loadPosts() {
         if (loading) return;
@@ -173,6 +197,7 @@ $(document).ready(function() {
             data: { assunto: assunto, page: page },
             success: function(data) {
                 var posts = JSON.parse(data);
+                
                 if (posts.length > 0) {
                     $.each(posts, function(index, post) {
                         var html = '<article>';
@@ -180,22 +205,38 @@ $(document).ready(function() {
                         html += '<p>' + $('<div/>').text(post.corpo).html().replace(/\n/g, '<br>') + '</p>';
                         html += '<p><small>Postado em: ' + post.data_criacao + '</small></p>';
                         
-                        // Renderizando comentários
-                        html += '<div class="comments" id="comments-' + post.id_post + '">';
-                        html += loadComments(post.id_post); // Carregar comentários diretamente
-                        html += '</div>';
+                        // Botão para exibir comentários
+                        html += '<button class="btn btn-primary" data-post-id="' + post.id_post + '">Exibir Comentários</button>';
                         
+                        // Renderizando comentários
+                        html += '<div class="comentarios" id="comments-' + post.id_post + '" style="display:none;">';
+
+                        html += loadComments(post.id_post, post.id_topico); // Carregar comentários diretamente
+
                         // Formulário para adicionar comentário
                         html += renderCommentForm(post.id_post, post.id_topico);
-                        html += '<form method="post" action="backend/remover_post.php" style="display:inline;">';
-                        html += '<input type="hidden" name="id_post" value="' + post.id_post + '">';
-                        html += '<button type="submit" class="btn btn-danger" onclick="return confirm(\'Tem certeza que deseja remover este post?\');">Remover</button>';
-                        html += '</form>';
+                        html += '</div>';
+                        
+                        // Condicional para exibir o botão de remover
+
+                        if (post.id_user == usuarioLogado || adm == true) {
+                            console.log("veridico")
+                            html += '<form method="post" action="backend/remover_post.php" style="display:inline;">';
+                            html += '<input type="hidden" name="id_post" value="' + post.id_post + '">';
+                            html += '<button type="submit" class="btn btn-danger" onclick="return confirm(\'Tem certeza que deseja remover este post?\');">Remover</button>';
+                            html += '</form>';
+                        }
+
                         html += '</article><hr style="border: 1px solid #ffc107;">';
                         $('#posts').append(html);
                     });
                     page++;
                 } else {
+                    var html = '<article>';
+                    html += '<h1>Nenhum post encontrado </h1>';
+                    html += '</article><hr style="border: 1px solid #ffc107;">';
+                    $('#posts').append(html);
+                    
                     $(window).off('scroll', onScroll);
                 }
                 loading = false;
@@ -205,12 +246,13 @@ $(document).ready(function() {
     }
 
     function loadComments(postId) {
-        var commentsHtml = ''; // HTML para os comentários
+        var commentsHtml = '';
         $.ajax({
             url: 'load_comments.php',
             type: 'GET',
             data: { id_post: postId },
-            async: false, // Faz com que a chamada seja síncrona
+            async: false,
+
             success: function(data) {
                 var comments = JSON.parse(data);
                 if (comments.length > 0) {
@@ -222,23 +264,27 @@ $(document).ready(function() {
                         commentsHtml += '</div>';
                     });
                 } else {
+                    commentsHtml += '<div class="comentario">';
                     commentsHtml += '<p>Nenhum comentário encontrado.</p>';
+                    commentsHtml += '</div>';
                 }
             }
         });
-        return commentsHtml; // Retorna os comentários gerados
+        return commentsHtml;
     }
 
     function renderCommentForm(postId, topicoId) {
         return `
             <form method="post" action="adicionar_comentario.php">
-                <input type="hidden" name="id_post" value="${postId}">
-                <input type="hidden" name="id_topico" value="${topicoId}">
-                <div class="form-group">
-                    <label for="comentario">Adicionar um comentário:</label>
-                    <textarea id="comentario" name="texto_comentario" class="form-control" rows="3" required></textarea>
+                <div class ='comentario'>
+                    <input type="hidden" name="id_post" value="${postId}">
+                    <input type="hidden" name="id_topico" value="${topicoId}">
+                    <div class="form-group">
+                        <label for="comentario">Adicionar um comentário:</label>
+                        <textarea id="comentario" name="texto_comentario" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Comentar</button>
                 </div>
-                <button type="submit" class="btn btn-primary">Comentar</button>
             </form>
         `;
     }
@@ -250,6 +296,11 @@ $(document).ready(function() {
     }
 
     $(window).on('scroll', onScroll);
-    loadPosts();  // Carregar posts inicialmente
+    loadPosts();
+
+    $('#posts').on('click', '.btn-primary', function() {
+        var postId = $(this).data('post-id');
+        toggleComentarios(postId);
+    });
 });
 </script>

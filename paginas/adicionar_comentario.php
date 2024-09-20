@@ -3,7 +3,7 @@ include_once('../config/conexao.php');
 include_once('../includes/header.php');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    echo('kffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffff');
+    echo('fffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffffkffffffffffffffffffff');
     // Sanitização e validação dos dados recebidos
     $idPost = filter_var($_POST['id_post'], FILTER_SANITIZE_NUMBER_INT);
     $nomeUsuario = filter_var($_SESSION['loginUser'], FILTER_SANITIZE_STRING); // Assumindo que o nome do usuário está na sessão

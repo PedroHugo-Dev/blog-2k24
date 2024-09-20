@@ -1,6 +1,7 @@
 <?php
 session_start();
 include_once('../../config/conexao.php');
+include_once('../../includes/header.php');
 
 // Verifica se o usuário está logado e a requisição é um POST
 if (!isset($_SESSION['loginUser']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -11,6 +12,18 @@ if (!isset($_SESSION['loginUser']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
 $id_post = filter_var($_POST['id_post'], FILTER_SANITIZE_NUMBER_INT);
 
 try {
+    $check = "SELECT id_user FROM post WHERE id_user = :user";
+    $con = $conect->prepare($check);
+    $con->bindParam(':user', $id_user, PDO::PARAM_INT);
+    $con->execute();
+    $show = $con->fetch(PDO::FETCH_OBJ);
+    $topicUser = $show->id_user;
+
+    if ($topicUser !== $id_user && $adm === 0){
+        header('Location: ../../index.php'); // Redireciona se não estiver logado
+        exit;
+    }
+
     // Prepara a consulta para remover o post
     $deletePost = "DELETE FROM post WHERE id_post = :id_post";
     $stmt = $conect->prepare($deletePost);

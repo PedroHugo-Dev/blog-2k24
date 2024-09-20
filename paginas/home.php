@@ -163,6 +163,19 @@
         font-size: 12px;
     }
     }
+
+    .comentarios {
+        background-color: #f8f9fa; /* Fundo claro para os comentários */
+        border-left: 4px solid #ffc107; /* Borda amarela */
+        padding: 10px 15px; /* Padding interno */
+        margin-top: 15px; /* Espaçamento acima */
+        border-radius: 5px; /* Bordas arredondadas */
+    }
+
+    .comentario {
+    margin-bottom: 10px; /* Espaçamento entre comentários */
+    }
+
     </style>
 
     <!-- Content Wrapper. Contains page content -->
@@ -191,70 +204,7 @@
                 <div class="card-body">
                     <div id="posts" class="posts">
                         <!-- Os posts iniciais serão inseridos aqui -->
-                        <?php if ($postagens): ?>
-                                <?php foreach ($postagens as $post): ?>
-                                    <article class="post">
-                                        <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
-                                        <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
-                                        <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
-                                        <p><small>Da categoria: <?php echo $post['topico_nome']; ?></small></p>
-                                        
-                                        <!-- Exibir comentários -->
-                                        <div class="comentarios">
-                                            <?php
-                                            // Obter e exibir comentários para o post
-                                            $idPost = $post['id_post'];
-                                            $selectComentarios = "
-                                                SELECT c.*, u.nome_user
-                                                FROM comentario c
-                                                JOIN tb_user u ON c.id_user = u.id_user
-                                                WHERE c.id_post = :idPost
-                                                ORDER BY c.data_criacao ASC
-                                            ";
-                                            
-                                            $resultadoComentarios = $conect->prepare($selectComentarios);
-                                            $resultadoComentarios->bindParam(':idPost', $idPost, PDO::PARAM_INT);
-                                            $resultadoComentarios->execute();
-                                            $comentarios = $resultadoComentarios->fetchAll(PDO::FETCH_ASSOC);
-                                            ?>
-                                            <!-- Add Delete Button -->
-                                            <?php 
-                                                
-                                            ?>
-                                            <form method="post" action="backend/remover_post.php" style="display:inline;">
-                                                    <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
-                                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja remover este post?');">Remover</button>
-                                            </form>
 
-                                            <?php if ($comentarios): ?>
-                                                <?php foreach ($comentarios as $comentario): ?>
-                                                    <div class="comentario">
-                                                        <p><strong><?php echo htmlspecialchars($comentario['nome_user']); ?>:</strong></p>
-                                                        <p><?php echo nl2br(htmlspecialchars($comentario['corpo'])); ?></p>
-                                                        <p><small>Comentário postado em: <?php echo $comentario['data_criacao']; ?></small></p>
-                                                    </div>
-                                                <?php endforeach; ?>
-                                            <?php else: ?>
-                                                <p>Nenhum comentário encontrado.</p>
-                                            <?php endif; ?>
-                                        </div>
-                                        <!-- Formulário para adicionar comentários -->
-                                                    <form method="post" action="adicionar_comentario.php">
-                                                        <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
-                                                        <input type="hidden" name="id_topico" value="<?php echo $post['id_topico']; ?>">
-                                                        <div class="form-group">
-                                                            <label for="comentario">Adicionar um comentário:</label>
-                                                            <textarea id="comentario" name="texto_comentario" class="form-control" rows="3" required></textarea>
-                                                        </div>
-                                                        <button type="submit" class="btn btn-primary">Comentar</button>
-                                                    </form>
-
-                                        <hr style="border: 1px solid #ffc107;">
-                                    </article>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <p>Nenhum post encontrado.</p>
-                            <?php endif; ?>
                             
                     </div>
                     <div id="loading" style="display: none;"></div>
@@ -278,6 +228,18 @@
 $(document).ready(function() {
     var page = 1;
     var loading = false;
+    var usuarioLogado = "<?php echo htmlspecialchars($id_user); ?>"; // Usuário logado
+
+    function toggleComentarios(postId) {
+
+        var comentariosDiv = document.getElementById(`comments-${postId}`)
+        if (comentariosDiv.style.display === 'none') {
+            comentariosDiv.style.display = 'block';
+        } else {
+            comentariosDiv.style.display = 'none';
+        }
+
+    }
 
     function loadRandomPosts() {
         if (loading) return;
@@ -296,26 +258,39 @@ $(document).ready(function() {
                         html += '<h2>' + $('<div/>').text(post.titulo).html() + '</h2>';
                         html += '<p>' + $('<div/>').text(post.corpo).html().replace(/\n/g, '<br>') + '</p>';
 
+                                 // Botão para exibir comentários
+                        html += '<button class="btn btn-primary" data-post-id="' + post.id_post + '">Exibir Comentários</button>';
 
                         html += '<p><small>Da categoria: ' + $('<div/>').text(post.topico_nome).html() + '</small></p>'; // Adicionando o nome do tópico
                         html += '<p><small>Postado em: ' + post.data_criacao + '</small></p>';
                         
                         // Renderizando comentários
-                        html += '<div class="comments" id="comments-' + post.id_post + '">';
+                        html += '<div class="comentarios" id="comments-' + post.id_post + '" style="display:none;">';
                         html += loadComments(post.id_post); // Carregar comentários diretamente
-                        html += '</div>';
+                        
                         
                         // Formulário para adicionar comentário
                         html += renderCommentForm(post.id_post, post.id_topico);
-                        html += '<form method="post" action="backend/remover_post.php" style="display:inline;">';
-                        html += '<input type="hidden" name="id_post" value="' + post.id_post + '">';
-                        html += '<button type="submit" class="btn btn-danger" onclick="return confirm(\'Tem certeza que deseja remover este post?\');">Remover</button>';
-                        html += '</form>';
+                        html += '</div>';
+
+                        if (post.id_user == usuarioLogado) {
+                            console.log("veridico")
+                            html += '<form method="post" action="backend/remover_post.php" style="display:inline;">';
+                            html += '<input type="hidden" name="id_post" value="' + post.id_post + '">';
+                            html += '<button type="submit" class="btn btn-danger" onclick="return confirm(\'Tem certeza que deseja remover este post?\');">Remover</button>';
+                            html += '</form>';
+                        }
+
                         html += '</article><hr style="border: 1px solid #ffc107;">';
                         $('#posts').append(html);
                     });
                     page++;
                 } else {
+                    var html = '<article>';
+                    html += '<h1>Nenhum post encontrado </h1>';
+                    html += '</article><hr style="border: 1px solid #ffc107;">';
+                    $('#posts').append(html);
+                    
                     $(window).off('scroll', onScroll);
                 }
                 loading = false;
@@ -371,5 +346,10 @@ $(document).ready(function() {
 
     $(window).on('scroll', onScroll);
     loadRandomPosts();  // Carregar posts aleatórios inicialmente
+
+    $('#posts').on('click', '.btn-primary', function() {
+        var postId = $(this).data('post-id');
+        toggleComentarios(postId);
+    });
 });
 </script>

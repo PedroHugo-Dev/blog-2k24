@@ -136,6 +136,7 @@ try {
         $foto_user = $show->foto_user;
         $nome_user = $show->nome_user;
         $email_user = $show->email_user;
+        $adm = $show->administrador;
     } else {
         // Exibe uma mensagem de aviso se não houver dados de perfil
         echo '<div class="alert alert-danger"><strong>Aviso!</strong> Não há dados de perfil :(</div>';
