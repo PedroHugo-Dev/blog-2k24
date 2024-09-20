@@ -226,9 +226,22 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
+    console.log("SIM")
     var page = 1;
     var loading = false;
+    var assunto = "<?php echo htmlspecialchars($acao); ?>";
+    var usuarioLogado = -1;
+    var adm = 0;
+    <?php
+        if ($_SESSION['loginUser'] !== 'Guest'){
+
+    ?>
+
     var usuarioLogado = "<?php echo htmlspecialchars($id_user); ?>"; // Usuário logado
+    var adm = "<?php echo htmlspecialchars($adm); ?>"; // Usuário logado
+    <?php
+        }
+    ?> 
 
     function toggleComentarios(postId) {
 

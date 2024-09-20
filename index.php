@@ -2,11 +2,12 @@
 session_start();
 
 // Verifica se o usuário está autenticado (verifica se a sessão está ativa e se o usuário está logado)
-if (isset($_SESSION['loginUser']) && isset($_SESSION['senhaUser'])) {
     // Redireciona para a página home
+    if ($_GET["redirecionamento"] !== "true"){
+    
     header("Location: paginas/home.php");
     exit(); // Certifique-se de usar exit() após header()
-}
+    }
 ?>
 <?php
             include_once('config/conexao.php');
@@ -222,7 +223,7 @@ if (isset($_SESSION['loginUser']) && isset($_SESSION['senhaUser'])) {
             ?>
 
             <p style="text-align: center; padding-top: 25px">
-                <a href="cad_user.php" class="text-center">Se ainda não tem cadastro clique aqui!</a>
+                <a href="cad_user.php?redirecionamento=true" class="text-center">Se ainda não tem cadastro clique aqui!</a>
             </p>
         </div>
         <!-- /.login-card-body -->

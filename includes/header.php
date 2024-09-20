@@ -1,6 +1,13 @@
 <?php
 // Inicia o buffer de saída
 ob_start();
+function consolePrint($data) {
+  $output = $data;
+  if (is_array($output))
+      $output = implode(',', $output);
+
+  echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
+}
 
 // Inicia a sessão apenas se ainda não tiver sido iniciada
 if (session_status() == PHP_SESSION_NONE) {
@@ -10,8 +17,11 @@ if (session_status() == PHP_SESSION_NONE) {
 // Verifica se as variáveis de sessão estão definidas
 if (!isset($_SESSION['loginUser'])) {
     // Redireciona para a página inicial com a mensagem de acesso negado
-    header("Location: ../index.php?acao=negado");
-    exit;
+    //header("Location: ../index.php?acao=negado");
+    //exit;
+    $_SESSION['loginUser'] = 'Guest';
+    consolePrint($_SESSION['loginUser']);
+    
 }
 
 // Inclui o script de saída
@@ -110,52 +120,65 @@ include_once('../config/conexao.php');
 // Obtém o email do usuário logado a partir da sessão
 $usuarioLogado = $_SESSION['loginUser'];
 
-// Define a consulta SQL para selecionar todos os campos do usuário com base no email
-$selectUser = "SELECT * FROM tb_user WHERE email_user=:emailUserLogado";
+if ($usuarioLogado !== 'Guest'){
+  // Define a consulta SQL para selecionar todos os campos do usuário com base no email
+  $selectUser = "SELECT * FROM tb_user WHERE email_user=:emailUserLogado";
 
-try {
-    // Prepara a consulta SQL
-    $resultadoUser = $conect->prepare($selectUser);
-    
-    // Vincula o parâmetro :emailUserLogado ao valor da variável $usuarioLogado
-    $resultadoUser->bindParam(':emailUserLogado', $usuarioLogado, PDO::PARAM_STR);
-    
-    // Executa a consulta preparada
-    $resultadoUser->execute();
+  try {
+      // Prepara a consulta SQL
+      $resultadoUser = $conect->prepare($selectUser);
+      
+      // Vincula o parâmetro :emailUserLogado ao valor da variável $usuarioLogado
+      $resultadoUser->bindParam(':emailUserLogado', $usuarioLogado, PDO::PARAM_STR);
+      
+      // Executa a consulta preparada
+      $resultadoUser->execute();
 
-    // Conta o número de linhas retornadas pela consulta
-    $contar = $resultadoUser->rowCount();
-    
-    // Se houver uma ou mais linhas retornadas
-    if ($contar > 0) {
-        // Obtém a próxima linha do conjunto de resultados como um objeto
-        $show = $resultadoUser->fetch(PDO::FETCH_OBJ);
-        
-        // Atribui os valores dos campos do usuário às variáveis PHP
-        $id_user = $show->id_user;
-        $foto_user = $show->foto_user;
-        $nome_user = $show->nome_user;
-        $email_user = $show->email_user;
-        $adm = $show->administrador;
-    } else {
-        // Exibe uma mensagem de aviso se não houver dados de perfil
-        echo '<div class="alert alert-danger"><strong>Aviso!</strong> Não há dados de perfil :(</div>';
-    }
-} catch (PDOException $e) {
-    // Registra a mensagem de erro no log do servidor em vez de exibi-la ao usuário
-    error_log("ERRO DE LOGIN DO PDO: " . $e->getMessage());
-    
-    // Exibe uma mensagem de erro genérica para o usuário
-    echo '<div class="alert alert-danger"><strong>Aviso!</strong> Ocorreu um erro ao tentar acessar os dados do perfil.</div>';
+      // Conta o número de linhas retornadas pela consulta
+      $contar = $resultadoUser->rowCount();
+      
+      // Se houver uma ou mais linhas retornadas
+      if ($contar > 0) {
+          // Obtém a próxima linha do conjunto de resultados como um objeto
+          $show = $resultadoUser->fetch(PDO::FETCH_OBJ);
+          
+          // Atribui os valores dos campos do usuário às variáveis PHP
+          $id_user = $show->id_user;
+          $foto_user = $show->foto_user;
+          $nome_user = $show->nome_user;
+          $email_user = $show->email_user;
+          $adm = $show->administrador;
+      } else {
+          // Exibe uma mensagem de aviso se não houver dados de perfil
+          echo '<div class="alert alert-danger"><strong>Aviso!</strong> Não há dados de perfil :(</div>';
+      }
+  } catch (PDOException $e) {
+      // Registra a mensagem de erro no log do servidor em vez de exibi-la ao usuário
+      error_log("ERRO DE LOGIN DO PDO: " . $e->getMessage());
+      
+      // Exibe uma mensagem de erro genérica para o usuário
+      echo '<div class="alert alert-danger"><strong>Aviso!</strong> Ocorreu um erro ao tentar acessar os dados do perfil.</div>';
+  }
+}else{
+  $foto_user = 'avatar-padrao.png';
+  $nome_user = 'Visitante';
+  $email_user = 'noemail';
+  $adm = false;
 }
 ?>  
 
 <!-- index.html -->
 
+<script>
+        function contaAlerta() {
+            alert("Crie uma conta para postar!");
+        }
+</script>
+
 <nav class="main-header navbar navbar-expand navbar-dark">
   <ul class="navbar-nav">
     <li class="nav-item">
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#criarTopicoModal">
+      <button type="button" class="btn btn-primary" data-toggle="modal" <?php if ($_SESSION['loginUser'] === 'Guest'){ ?> onclick="contaAlerta()" <?php }else{ ?>data-target="#criarTopicoModal" <?php } ?>>
         <i class="fas fa-comment-alt mr-2"></i> Criar Post
       </button>
     </li>
@@ -173,11 +196,36 @@ try {
 
   <ul class="navbar-nav ml-auto">
     <li class="nav-item">
-      <a href="?sair">
-        <button type="button" class="btn btn-primary">
-          <i class="fas fa-sign-out-alt mr-2"></i> Sair
-        </button>
-      </a>
+      
+        
+          <?php 
+            if ($_SESSION['loginUser'] !== "Guest"){
+              ?>
+            <a href="?sair">
+              <button type="button" class="btn btn-primary">
+               <i class="fas fa-sign-out-alt mr-2"></i> Sair
+              </button>
+            </a>
+        <?php
+        }else{
+
+          ?>
+          <a href="?logar">
+          <button type="button" class="btn btn-primary">
+            Entrar
+          </button>
+          </a>
+
+          <a href="?criarConta">
+          <button type="button" class="btn btn-primary">
+            Criar uma conta
+          </button>
+          </a>
+
+        <?php
+        }
+        ?>
+
     </li>
   </ul>
 </nav>
@@ -232,51 +280,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <!-- Modal para criar tópico -->
+
 <div class="modal fade" id="criarTopicoModal" tabindex="-1" role="dialog" aria-labelledby="criarTopicoModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="criarTopicoModalLabel">Criar Post</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form method="post" action="processar_post.php">
-          <div class="form-group">
-            <label for="titulo">Título</label>
-            <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Digite o título do Post" required>
-          </div>
-          <div class="form-group">
-            <label for="descricao">Descrição</label>
-            <textarea class="form-control" id="descricao" name="descricao" rows="3" placeholder="Digite a descrição do Post" required></textarea>
-          </div>
 
-          <?php 
-          // Conectar ao banco de dados e buscar tópicos
- // Inclua seu arquivo de conexão com o banco de dados
-          $query = $conect->prepare("SELECT * FROM topico ORDER BY nome DESC");
-          $query->execute();
-          $topicos = $query->fetchAll(PDO::FETCH_ASSOC);
-          ?>
-          <div class="form-group">
-            <label for="assunto">Assunto</label>
-            <select class="form-control" id="assunto" name="assunto" required>
-              <option value="" disabled selected>Selecione o assunto</option>
-              <?php foreach ($topicos as $topico): ?>
-                <option value="<?= htmlspecialchars($topico['id_topico']); ?>">
-                  <?= htmlspecialchars($topico['nome']); ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-primary">Criar Post</button>
-        </form>
-      </div>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="criarTopicoModalLabel">Criar Post</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="processar_post.php">
+                        <div class="form-group">
+                            <label for="titulo">Título</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Digite o título do Post" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="descricao">Descrição</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="3" placeholder="Digite a descrição do Post" required></textarea>
+                        </div>
+
+                        <?php 
+                        // Conectar ao banco de dados e buscar tópicos
+                        $query = $conect->prepare("SELECT * FROM topico ORDER BY nome DESC");
+                        $query->execute();
+                        $topicos = $query->fetchAll(PDO::FETCH_ASSOC);
+                        ?>
+
+                        <div class="form-group">
+                            <label for="assunto">Assunto</label>
+                            <select class="form-control" id="assunto" name="assunto" required>
+                                <option value="" disabled selected>Selecione o assunto</option>
+                                <?php foreach ($topicos as $topico): ?>
+                                    <option value="<?= htmlspecialchars($topico['id_topico']); ?>">
+                                        <?= htmlspecialchars($topico['nome']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Criar Post</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-
 
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">

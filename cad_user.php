@@ -171,7 +171,7 @@
          </div>
          <div class="col-12">
            <p style="text-align: center;">
-       <a href="index.php" class="text-center">Voltar para o Login!</a>
+       <a href="index.php?redirecionamento=true" class="text-center">Voltar para o Login!</a>
      </p>
          </div>
          
