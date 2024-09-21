@@ -2,10 +2,10 @@
 // Definindo as constantes para a conexão com o banco de dados
 if (!defined('DB_CONFIG')) {
     define('DB_CONFIG', [
-        'host' => 'localhost:3308',
+        'host' => 'localhost',
         'dbname' => 'blog_new',
         'user' => 'root',
-        'pass' => ''
+        'pass' => 'bdjmf'
     ]);
 }
 
