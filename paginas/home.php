@@ -32,28 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
             }
         }
     }
-
-    // Lógica para atualizar post
-    if ($_POST['acao'] === 'atualizar' && isset($_POST['titulo'])) {
-        $id_post = filter_input(INPUT_POST, 'id_post', FILTER_VALIDATE_INT);
-        $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
-        $corpo = filter_input(INPUT_POST, 'corpo', FILTER_SANITIZE_STRING);
-
-        if ($id_post && $titulo && $corpo) {
-            try {
-                $updatePost = "UPDATE post SET titulo = :titulo, corpo = :corpo WHERE id_post = :id_post";
-                $stmt = $conect->prepare($updatePost);
-                $stmt->bindParam(':titulo', $titulo);
-                $stmt->bindParam(':corpo', $corpo);
-                $stmt->bindParam(':id_post', $id_post);
-                $stmt->execute();
-                header("Location: index.php?acao=bemvindo");
-                exit();
-            } catch (PDOException $e) {
-                error_log("ERRO AO ATUALIZAR POST: " . $e->getMessage());
-            }
-        }
-    }
 }
 
 // Continue com a lógica existente
@@ -250,40 +228,46 @@ if ($acao === 'bemvindo') {
                             <?php if ($postagens): ?>
                                 <?php foreach ($postagens as $post): ?>
                                     <article>
-                                        <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
-                                        <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
-                                        <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
-                                        <p><small>De: <?php echo $post['topico_nome']; ?></small></p>
+                                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                            <div style="flex-grow: 1;">
+                                                <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
+                                                <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
+                                                <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
+                                                <p><small>De: <?php echo $post['topico_nome']; ?></small></p>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-secondary" onclick="toggleComentarios(<?php echo $post['id_post']; ?>)" style="margin-left: 10px;">
+                                                    <i class="fas fa-comments"></i>
+                                                </button>
+                                                <button class="btn btn-secondary" onclick="openEditForm(<?php echo $post['id_post']; ?>)" style="margin-left: 10px;">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </button>
+                                                <form method="post" action="" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar?');">
+                                                    <input type="hidden" name="acao" value="deletar">
+                                                    <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
+                                                    <button type="submit" class="btn btn-danger" style="margin-left: 10px;">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
 
-                                        <button class="btn btn-primary" onclick="toggleComentarios(<?php echo $post['id_post']; ?>)">Exibir Comentários</button>
-
-                                        <button class="btn btn-secondary" onclick="openEditForm(<?php echo $post['id_post']; ?>)" style="margin-left: 10px;">
-                                            <i class="fas fa-pencil-alt"></i>
-                                        </button>
-
-                                        <div id="edit-form-<?php echo $post['id_post']; ?>" style="display: none;">
-                                            <form method="post" action="">
+                                        <div id="edit-form-<?php echo $post['id_post']; ?>" style="display: none; margin-top: 10px;">
+                                            <form method="post" onsubmit="return updatePost(<?php echo $post['id_post']; ?>, this);">
                                                 <input type="hidden" name="acao" value="atualizar">
                                                 <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
                                                 <div class="form-group">
                                                     <label for="titulo">Título:</label>
-                                                    <input type="text" name="titulo" value="<?php echo htmlspecialchars($post['titulo']); ?>" required class="form-control">
+                                                    <input type="text" name="titulo" class="form-control" value="<?php echo htmlspecialchars($post['titulo']); ?>" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="corpo">Conteúdo:</label>
                                                     <textarea name="corpo" required class="form-control"><?php echo htmlspecialchars($post['corpo']); ?></textarea>
                                                 </div>
                                                 <button type="submit" class="btn btn-primary">Atualizar</button>
+                                                <button type="button" class="btn btn-secondary" onclick="cancelEdit(<?php echo $post['id_post']; ?>)" style="margin-left: 10px;">Cancelar</button>
                                             </form>
                                         </div>
-
-                                        <form method="post" action="" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar?');">
-                                            <input type="hidden" name="acao" value="deletar">
-                                            <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
-                                            <button type="submit" class="btn btn-danger" style="margin-left: 10px;">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
 
                                         <div class="comentarios" id="comentarios-<?php echo $post['id_post']; ?>" style="display: none;">
                                             <?php
@@ -346,9 +330,48 @@ if ($acao === 'bemvindo') {
         const comentariosDiv = document.getElementById(`comentarios-${postId}`);
         comentariosDiv.style.display = comentariosDiv.style.display === 'none' ? 'block' : 'none';
     }
+
     function openEditForm(postId) {
         const editForm = document.getElementById(`edit-form-${postId}`);
         editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function cancelEdit(postId) {
+        const editForm = document.getElementById(`edit-form-${postId}`);
+        editForm.style.display = 'none';
+    }
+
+    function updatePost(postId, form) {
+        const formData = new FormData(form);
+
+        fetch('update_script.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Atualiza o conteúdo do post na página
+                const postTitle = form.querySelector('input[name="titulo"]').value;
+                const postBody = form.querySelector('textarea[name="corpo"]').value;
+                document.querySelector(`article h2`).innerText = postTitle;
+                document.querySelector(`article p`).innerText = postBody;
+
+                alert('Post atualizado com sucesso!');
+                
+                // Atualiza a página após 0,3 segundos
+                setTimeout(() => {
+                    location.reload();
+                }, 1);
+            } else {
+                alert('Erro ao atualizar o post: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+        });
+
+        return false; // Impede o envio padrão do formulário
     }
 </script>
 

@@ -2,6 +2,19 @@
 include_once('../includes/header.php');
 include_once("../config/conexao.php");
 
+// Processar exclusão de post
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['acao'] === 'deletar') {
+    $id_post = filter_var($_POST['id_post'], FILTER_SANITIZE_NUMBER_INT);
+    
+    // Preparar e executar a consulta de exclusão
+    $deleteQuery = $conect->prepare("DELETE FROM post WHERE id_post = :id_post");
+    $deleteQuery->bindParam(':id_post', $id_post, PDO::PARAM_INT);
+    $deleteQuery->execute();
+    
+    // Redirecionar após a exclusão
+    header("Location: ".$_SERVER['PHP_SELF']."?assunto=".$acao);
+    exit();
+}
 // Sanitização de entrada
 $acao = filter_var(isset($_GET['assunto']) ? $_GET['assunto'] : 'Teste', FILTER_SANITIZE_STRING);
 
@@ -100,12 +113,46 @@ if ($topicoResult) {
                                 <?php if ($posts): ?>
                                     <?php foreach ($posts as $post): ?>
                                         <article>
-                                            <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
-                                            <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
-                                            <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
-                                            
-                                            <button class="btn btn-primary" onclick="toggleComentarios(<?php echo $post['id_post']; ?>)">Exibir Comentários</button>
-                                            
+                                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                                <div style="flex-grow: 1;">
+                                                    <h2><?php echo htmlspecialchars($post['titulo']); ?></h2>
+                                                    <p><?php echo nl2br(htmlspecialchars($post['corpo'])); ?></p>
+                                                    <p><small>Postado em: <?php echo $post['data_criacao']; ?></small></p>
+                                                </div>
+                                                <div>
+                                                    <button class="btn btn-secondary" onclick="toggleComentarios(<?php echo $post['id_post']; ?>)" style="margin-left: 10px;">
+                                                        <i class="fas fa-comments"></i>
+                                                    </button>
+                                                    <button class="btn btn-secondary" onclick="openEditForm(<?php echo $post['id_post']; ?>)" style="margin-left: 10px;">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                    </button>
+                                                    <form method="post" action="" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar?');">
+                                                        <input type="hidden" name="acao" value="deletar">
+                                                        <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
+                                                        <button type="submit" class="btn btn-danger" style="margin-left: 10px;">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            <div id="edit-form-<?php echo $post['id_post']; ?>" style="display: none; margin-top: 10px;">
+                                                <form method="post" onsubmit="return updatePost(<?php echo $post['id_post']; ?>, this);">
+                                                    <input type="hidden" name="acao" value="atualizar">
+                                                    <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
+                                                    <div class="form-group">
+                                                        <label for="titulo">Título:</label>
+                                                        <input type="text" name="titulo" class="form-control" value="<?php echo htmlspecialchars($post['titulo']); ?>" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="corpo">Conteúdo:</label>
+                                                        <textarea name="corpo" required class="form-control"><?php echo htmlspecialchars($post['corpo']); ?></textarea>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Atualizar</button>
+                                                    <button type="button" class="btn btn-secondary" onclick="cancelEdit(<?php echo $post['id_post']; ?>)" style="margin-left: 10px;">Cancelar</button>
+                                                </form>
+                                            </div>
+
                                             <div class="comentarios" id="comentarios-<?php echo $post['id_post']; ?>" style="display: none;">
                                                 <?php
                                                 // Obter e exibir comentários para o post
@@ -162,15 +209,54 @@ if ($topicoResult) {
     </section>
 </div>
 
-<?php include_once('../includes/footer.php'); ?>
-
 <script>
 function toggleComentarios(postId) {
     const comentariosDiv = document.getElementById(`comentarios-${postId}`);
-    if (comentariosDiv.style.display === 'none') {
-        comentariosDiv.style.display = 'block';
-    } else {
-        comentariosDiv.style.display = 'none';
-    }
+    comentariosDiv.style.display = comentariosDiv.style.display === 'none' ? 'block' : 'none';
+}
+
+function openEditForm(postId) {
+    const editForm = document.getElementById(`edit-form-${postId}`);
+    editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';
+}
+
+function cancelEdit(postId) {
+    const editForm = document.getElementById(`edit-form-${postId}`);
+    editForm.style.display = 'none';
+}
+
+function updatePost(postId, form) {
+    const formData = new FormData(form);
+
+    fetch('update_script.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Atualiza o conteúdo do post na página
+            const postTitle = form.querySelector('input[name="titulo"]').value;
+            const postBody = form.querySelector('textarea[name="corpo"]').value;
+            document.querySelector(`article h2`).innerText = postTitle;
+            document.querySelector(`article p`).innerText = postBody;
+
+            alert('Post atualizado com sucesso!');
+
+            // Atualiza a página após 0,3 segundos
+            setTimeout(() => {
+                location.reload();
+            }, 1);
+        } else {
+            alert('Erro ao atualizar o post: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
+
+    return false; // Impede o envio padrão do formulário
 }
 </script>
+
+<?php include_once('../includes/footer.php'); ?>
