@@ -344,7 +344,7 @@ if ($acao === 'bemvindo') {
     function updatePost(postId, form) {
         const formData = new FormData(form);
 
-        fetch('update_script.php', {
+        fetch('update_post.php', {
             method: 'POST',
             body: formData
         })
