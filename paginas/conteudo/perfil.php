@@ -1,13 +1,20 @@
+<style>
+  .card-header2{
+    background-color: #25688E;
+  }
+  .card-title2{
+    color: #ffffff;
+    margin-top: 6px;
+    text-align: center;
+  }
+
+</style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1>Editar Perfil</h1>
-          </div>
-          
         </div>
       </div><!-- /.container-fluid -->
     </section>
@@ -20,8 +27,8 @@
           <div class="col-md-6">
             <!-- general form elements -->
             <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Editar Perfil</h3>
+              <div class="card-header2">
+                <h3 class="card-title2"><b>Editar informações de <?php echo $nome_user ?></b></h3>
               </div>
               <!-- /.card-header -->
               <!-- form start -->
@@ -40,21 +47,12 @@
                     <label for="exampleInputPassword1">Senha</label>
                     <input type="password" class="form-control" name="senha" id="telefone" value="" placeholder="**************************">
                   </div>
-                  <div class="form-group">
-                    <label for="exampleInputFile">Avatar do usuário</label>
-                    <div class="input-group">
-                      <div class="custom-file">
-                        <input type="file" class="custom-file-input" name="foto" id="foto">
-                        <label class="custom-file-label" for="exampleInputFile">Arquivo de imagem</label>
-                      </div>
-                      
-                    </div>
-                  </div>
+                  
                 </div>
                 <!-- /.card-body -->
 
                 <div class="card-footer">
-                  <button type="submit" name="upPerfil" class="btn btn-primary">Alterar dados do usuário</button>
+                  <button type="submit" name="upPerfil" class="btn btn-primary">Salvar modificações</button>
                 </div>
               </form>
              <?php
@@ -160,8 +158,8 @@
             
             <div class="col-md-6">
             <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">Dados do Usuário</h3>
+              <div class="card-header2">
+                <h3 class="card-title2"><b>Foto de <?php echo $nome_user ?></b></h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body p-0" style="text-align: center; margin-bottom: 98px">
@@ -172,14 +170,22 @@
             // Verifica se a variável $foto_user é igual a 'avatar-padrao.png'
             if ($show->foto_user == 'avatar-padrao.png') {
                 // Exibe a imagem do avatar padrão
-                echo '<img src="../img/avatar_p/' . $show->foto_user . '" alt="' . $show->foto_user . '" title="' . $show->foto_user . '" style="width: 250px; border-radius: 100%; padding-top:15px">';
+                echo '<img src="../img/avatar_p/' . $show->foto_user . '" alt="' . $show->foto_user . '" title="' . $show->foto_user . '" style="width: 141px; border-radius: 100%; padding-top:15px; margin-bottom: 20px;">';
             } else {
                 // Exibe a imagem do usuário
                 echo '<img src="../img/user/' . $show->foto_user . '" alt="' . $show->foto_user . '" title="' . $show->foto_user . '" style="width: 250px; border-radius: 100%; padding-top:15px">';
             }
-            ?>    
-                <h1><?php echo $nome_user; ?></h1>
-                <strong><?php echo $email_user; ?></strong>
+            ?>
+            <div class="form-group">
+                    <label for="exampleInputFile2">Avatar do usuário</label>
+                    <div class="input-group">
+                      <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="foto" id="foto">
+                        <label class="custom-file-label" style="margin-left:20px; width: 764px;" for="exampleInputFile">Arquivo de imagem</label>
+                      </div>
+                      
+                    </div>
+                  </div>
                 
               </div>
               <!-- /.card-body -->

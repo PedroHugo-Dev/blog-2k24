@@ -89,6 +89,10 @@ if ($acao === 'bemvindo') {
         error_log("ERRO AO BUSCAR POSTAGENS: " . $e->getMessage());
         $postagens = [];
     }
+} elseif ($acao === 'perfil') {
+    // Não exibe nada relacionado à home no perfil
+    include_once($pagina_incluir);
+    exit();
 } else {
     include_once($pagina_incluir);
 }
@@ -225,7 +229,7 @@ if ($acao === 'bemvindo') {
                 <div class="card card-primary">
                     <div class="card-body">
                         <div class="posts" id="posts">
-                            <?php if ($postagens): ?>
+                            <?php if (isset($postagens)): ?>
                                 <?php foreach ($postagens as $post): ?>
                                     <article>
                                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -358,7 +362,7 @@ if ($acao === 'bemvindo') {
                 document.querySelector(`article p`).innerText = postBody;
 
                 alert('Post atualizado com sucesso!');
-                
+
                 // Atualiza a página após 0,3 segundos
                 setTimeout(() => {
                     location.reload();
