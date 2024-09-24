@@ -241,6 +241,10 @@ $(document).ready(function() {
 
                         html += '</article><hr style="border: 1px solid #ffc107;">';
                         $('#posts').append(html);
+
+                        if (posts.length <= 5) {
+                            $(window).off('scroll', onScroll);
+                        }
                     });
                     page++;
                 } else {
@@ -286,21 +290,31 @@ $(document).ready(function() {
     }
 
     function renderCommentForm(postId, topicoId) {
-        return `
-            <form method="post" action="adicionar_comentario.php">
-                <div class ='comentario'>
-                    <input type="hidden" name="id_post" value="${postId}">
-                    <input type="hidden" name="id_topico" value="${topicoId}">
-                    <div class="form-group">
-                        <label for="comentario">Adicionar um comentário:</label>
-                        <textarea id="comentario" name="texto_comentario" class="form-control" rows="3" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Comentar</button>
-                </div>
-            </form>
-        `;
-    }
+    // Define the button and textarea variable
+    let button, textarea;
 
+    // Check the user's login status
+    <?php if ($_SESSION['loginUser'] === 'Guest') { ?>
+        button = '<button type="button" class="btn btn-primary" onclick="contaAlerta()">Comentar</button>';
+        textarea = '<textarea id="comentario" name="texto_comentario" class="form-control" rows="3" disabled required>' +
+                   'Faça login para adicionar um comentário.</textarea>';
+    <?php } else { ?>
+        button = '<button type="submit" class="btn btn-primary">Comentar</button>';
+        textarea = '<textarea id="comentario" name="texto_comentario" class="form-control" rows="3" required></textarea>';
+    <?php } ?>
+
+    return `
+        <form method="post" action="adicionar_comentario.php">
+            <input type="hidden" name="id_post" value="${postId}">
+            <input type="hidden" name="id_topico" value="${topicoId}">
+            <div class="form-group">
+                <label for="comentario">Adicionar um comentário:</label>
+                ${textarea}
+            </div>
+            ${button}
+        </form>
+    `;
+    }
     function onScroll() {
         if ($(window).scrollTop() + $(window).height() + 100 > $(document).height()) {
             loadPosts();

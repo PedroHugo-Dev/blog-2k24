@@ -170,15 +170,15 @@ if ($usuarioLogado !== 'Guest'){
 <!-- index.html -->
 
 <script>
-        function contaAlerta() {
-            alert("Crie uma conta para postar!");
+        function contaAlerta(alerta) {
+            alert('Crie uma conta para essa interação!');
         }
 </script>
 
 <nav class="main-header navbar navbar-expand navbar-dark">
   <ul class="navbar-nav">
     <li class="nav-item">
-      <button type="button" class="btn btn-primary" data-toggle="modal" <?php if ($_SESSION['loginUser'] === 'Guest'){ ?> onclick="contaAlerta()" <?php }else{ ?>data-target="#criarTopicoModal" <?php } ?>>
+      <button type="button" class="btn btn-primary" data-toggle="modal" <?php if ($_SESSION['loginUser'] === 'Guest'){ ?> onclick="contaAlerta('Crie uma conta para postar')" <?php }else{ ?>data-target="#criarTopicoModal" <?php } ?>>
         <i class="fas fa-comment-alt mr-2"></i> Criar Post
       </button>
     </li>
