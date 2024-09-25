@@ -202,3 +202,4 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+  <?php include_once('../includes/footer.php'); ?>
