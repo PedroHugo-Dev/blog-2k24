@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     try {
         // Preparar e executar a inserção do comentário
-        $inserirComentario = "
+        $inserirComentario = " 
             INSERT INTO comentario (id_post, corpo, id_user, data_criacao, id_topico)
             VALUES (:idPost, :textoComentario, (
                 SELECT id_user
