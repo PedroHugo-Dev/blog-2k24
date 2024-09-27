@@ -323,7 +323,6 @@ $(document).ready(function() {
                                 </form>
                             `;
                         }
-
                         html += '</div>'; // Fecha o div dos botões
                         html += '</div>'; // Fecha o div do cabeçalho do artigo
 
