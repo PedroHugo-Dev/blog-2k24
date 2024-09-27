@@ -119,7 +119,7 @@ include_once('../config/conexao.php');
 
 // Obtém o email do usuário logado a partir da sessão
 $usuarioLogado = $_SESSION['loginUser'];
-
+consolePrint($usuarioLogado);
 if ($usuarioLogado !== 'Guest'){
   // Define a consulta SQL para selecionar todos os campos do usuário com base no email
   $selectUser = "SELECT * FROM tb_user WHERE email_user=:emailUserLogado";
@@ -164,7 +164,7 @@ if ($usuarioLogado !== 'Guest'){
   $nome_user = 'Visitante';
   $email_user = 'noemail';
   $adm = false;
-}
+} consolePrint($foto_user);
 ?>  
 
 <!-- index.html -->
@@ -332,7 +332,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-      <span class="brand-text font-weight-light">Blog||JMF</span>
+      <span class="brand-text font-weight-light">StarBlog</span>
     </a>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -341,12 +341,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="image">
             <?php
               // Verifica se a variável $foto_user é igual a 'avatar-padrao.png'
+              consolePrint('oiiiiiii');
               if ($foto_user == 'avatar-padrao.png') {
                   // Exibe a imagem do avatar padrão
+                  consolePrint('1');
                   echo '<img src="../img/avatar_p/' . $foto_user . '" alt="' . $foto_user . '" title="' . $nome_user . '" style="width: 40px; border-radius: 100%;" class="foto-perfil">';
               } else {
+                consolePrint('2');
                   // Exibe a imagem do usuário
-                  echo '<img src="../img/user/' . $foto_user . '" alt="' . $foto_user . '" title="' . $nome_user . '" style="width: 40px; border-radius: 100%;" class="foto-perfil">';
+                  echo '<img src="../img/' . $foto_user . '" alt="' . $foto_user . '" title="' . $nome_user . '" style="width: 40px; border-radius: 100%;" class="foto-perfil">';
               }
             ?>
           </div>
@@ -413,26 +416,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="./index1.php" class="nav-link">
+                <a href="../paginas/sobre.php" class="nav-link">
                   <p>Sobre o site</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./index2.php" class="nav-link">
+                <a href="../paginas/ajuda.php" class="nav-link">
                   <p>Ajuda</p>
                 </a>
               </li>
+              <?php if ($adm === 1) { ?>
               <li class="nav-item">
-                <a href="./index3.php" class="nav-link">
-                  <p>Contatos</p>
-                </a>
-              </li>
-              <?php ///////// ?>
-              <li class="nav-item">
-                <a href="../paginas/index3.php" class="nav-link">
+                <a href="../paginas/admin.php" class="nav-link">
                   <p>Painel de administrador</p>
                 </a>
-              </li>
+              </li> <?php } ?>
 
             </ul>
           </li>

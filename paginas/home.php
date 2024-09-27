@@ -81,6 +81,19 @@
 
     <style>
     /* Estilizando o card e posts */
+    article {
+    position: relative; /* Adiciona um contexto de posicionamento */
+}
+
+.button-container {
+    position: absolute; /* Posiciona os botões em relação ao artigo */
+    top: 10px; /* Ajuste conforme necessário */
+    right: 10px; /* Ajuste conforme necessário */
+    display: flex;
+    justify-content: flex-end;
+}
+
+
     .card-body {
     padding: 20px;
     }
@@ -176,6 +189,24 @@
     margin-bottom: 10px; /* Espaçamento entre comentários */
     }
 
+
+    /* Estilo para o título do blog */
+    .blog-title {
+        font-size: 28px; /* Aumenta o tamanho da fonte */
+        font-weight: 700; /* Deixa o texto em negrito */
+        color: #343a40; /* Cor do texto (similar ao restante) */
+        text-transform: uppercase; /* Transforma o texto em maiúsculas */
+        border-bottom: 2px solid #ffc107; /* Borda inferior para destaque */
+        padding-bottom: 10px; /* Espaçamento abaixo do título */
+    }
+
+    /* Melhorando a responsividade */
+    @media (max-width: 768px) {
+        .blog-title {
+            font-size: 24px; /* Reduz o tamanho em telas menores */
+        }
+    }
+
     </style>
 
     <!-- Content Wrapper. Contains page content -->
@@ -185,14 +216,15 @@
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
+    <div class="container-fluid">
+        <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Blog - Home</h1>
+                <h1 class="blog-title">Blog - Home</h1>
             </div>
-            </div>
-        </div><!-- /.container-fluid -->
-        </section>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
 
         <!-- Main content -->
         <section class="content">
@@ -263,82 +295,80 @@ $(document).ready(function() {
     }
 
     function loadRandomPosts() {
-        if (loading) return;
-        loading = true;
-        $('#loading').show();
+    if (loading) return;
+    loading = true;
+    $('#loading').show();
 
-        $.ajax({
-            url: 'carregar_posts.php', // URL do script que carrega posts aleatórios
-            type: 'GET',
-            data: { page: page },
-            success: function(data) {
-                var posts = JSON.parse(data);
-                if (posts.length > 0) {
-                    $.each(posts, function(index, post) {
-                        var html = '<article>';
-                        html += '<h2>' + $('<div/>').text(post.titulo).html() + '</h2>';
-                        html += '<p>' + $('<div/>').text(post.corpo).html().replace(/\n/g, '<br>') + '</p>';
+    $.ajax({
+        url: 'carregar_posts.php', // URL do script que carrega posts aleatórios
+        type: 'GET',
+        data: { page: page },
+        success: function(data) {
+            var posts = JSON.parse(data);
+            if (posts.length > 0) {
+                $.each(posts, function(index, post) {
+                    var html = '<article>';
 
-                                 // Botão para exibir comentários
+                    html += '<h2>' + $('<div/>').text(post.titulo).html() + '</h2>';
+                    html += '<p><small><i>Postado por: ' + $('<div/>').text(post.usuario_nome).html() + '</small></p></i>';
+                    html += '<p>' + $('<div/>').text(post.corpo).html().replace(/\n/g, '<br>') + '</p>';
+                    html += '<p><small>Da categoria: ' + $('<div/>').text(post.topico_nome).html() + '</small></p>'; // Adicionando o nome do tópico
+                    html += '<p><small>Postado em: ' + post.data_criacao + '</small></p>';
 
-                        html += '<p><small>Da categoria: ' + $('<div/>').text(post.topico_nome).html() + '</small></p>'; // Adicionando o nome do tópico
-                        html += '<p><small>Postado em: ' + post.data_criacao + '</small></p>';
-                        
-                        // Renderizando comentários
-                        html += '<div class="comentarios" id="comments-' + post.id_post + '" style="display:none;">';
-                        html += loadComments(post.id_post); // Carregar comentários diretamente
-                        
-                        
-                        // Formulário para adicionar comentário
-                        html += renderCommentForm(post.id_post, post.id_topico);
-                        html += '</div>';
-                        html += '<button class="btn btn-primary" data-post-id="' + post.id_post + '"> <i class="fas fa-comments"></i></button>';
-                        if (post.id_user == usuarioLogado) {
-                            console.log(post.id_user);
-                            html += `
-                                            <div style="display: flex; align-items: flex-end;">
-                                            ` 
-                                          
-                                            html += `     
-                                                <button class="btn btn-primary" onclick="openEditForm(<?php echo $post['id_post']; ?>)" style="margin-left: 10px;">
-                                                    <i class="fas fa-pencil-alt"></i>
-                                                </button>
-                                                <form method="post" action="backend/remover_post.php" style="display:inline;">
-                                                    `
-                                                    html += '<input type="hidden" name="id_post" value="' + post.id_post + '">';
-                            html += `                                                                                   
-                                                    <button type="submit" class="btn btn-danger" style="margin-left: 10px;" onclick="return confirm('Tem certeza que deseja deletar?');">
-                                                           <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                            `
-                            
-                            html += '<form method="post" action="backend/remover_post.php" style="display:inline;">';
-                            html += '</form>';
-                        }
+                    // Renderizando comentários
+                    html += '<div class="comentarios" id="comments-' + post.id_post + '" style="display:none;">';
+                    html += loadComments(post.id_post); // Carregar comentários diretamente
+                    html += renderCommentForm(post.id_post, post.id_topico);
+                    html += '</div>';
 
-                        html += '</article><hr style="border: 1px solid #ffc107;">';
-                        $('#posts').append(html);
+                    // Botões no canto superior direito
+                    html += `
+                        <div class="button-container" style="display: flex; justify-content: flex-end;">
+                            <button class="btn btn-primary" data-post-id="${post.id_post}">
+                                <i class="fas fa-comments"></i>
+                            </button>
+                    `;
 
-                        if (posts.length < 5) {
-                            $(window).off('scroll', onScroll);
-                        }
-                    });
-                    page++;
-                } else {
+                    if (post.id_user == usuarioLogado || adm == 1) {
+                        html += `
+                            <button class="btn btn-primary" onclick="openEditForm(${post.id_post})" style="margin-left: 10px;">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            <form method="post" action="backend/remover_post.php" style="display:inline;">
+                                <input type="hidden" name="id_post" value="${post.id_post}">
+                                <button type="submit" class="btn btn-danger" style="margin-left: 10px;" onclick="return confirm('Tem certeza que deseja deletar?');">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        `;
+                    }
+
+                    html += '</div>'; // Fechando a div dos botões
+                    html += '</article><hr style="border: 1px solid #ffc107;">';
+                    $('#posts').append(html);
+
+                    if (posts.length < 5) {
+                        $(window).off('scroll', onScroll);
+                    }
+                });
+                page++;
+            } else {
+                if (page === 1) {
                     var html = '<article>';
                     html += '<h1>Nenhum post encontrado </h1>';
                     html += '</article><hr style="border: 1px solid #ffc107;">';
                     $('#posts').append(html);
-                    
+
                     $(window).off('scroll', onScroll);
                 }
-                loading = false;
-                $('#loading').hide();
             }
-        });
-    }
+            loading = false;
+            $('#loading').hide();
+        }
+    });
+}
+
+
 
     function loadComments(postId) {
         var commentsHtml = ''; // HTML para os comentários

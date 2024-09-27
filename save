@@ -1,0 +1,89 @@
+ function loadRandomPosts() {
+       if (loading) return; console.log(adm)
+       loading = true;
+       $('#loading').show();
+
+
+       $.ajax({
+           url: 'carregar_posts.php', // URL do script que carrega posts aleatórios
+           type: 'GET',
+           data: { page: page },
+           success: function(data) {
+               var posts = JSON.parse(data);
+               if (posts.length > 0) {
+                   $.each(posts, function(index, post) {
+                       var html = '<article style="position: relative;">'; // Permitir o posicionamento absoluto dos botões
+
+
+                       // Cabeçalho do artigo e botões 
+                        html += '<p><small><i>Postado por: ' + $('<div/>').text(post.usuario_nome).html() + '</small></p></i>';
+                       html += '<div class="article-header" style="display: flex; justify-content: space-between; align-items: flex-start;">';
+                       html += '<h2>' + $('<div/>').text(post.titulo).html() + '</h2>';
+
+
+                       // Grupo de botões no canto superior direito
+                       html += '<div class="btn-group" style="position: absolute; top: 20px; right: 20px; display: flex; gap: 10px;">';
+                      
+                       // Botão para exibir comentários
+                       html += '<button class="btn btn-primary" data-post-id="' + post.id_post + '"> <i class="fas fa-comments"></i></button>';
+                      
+                       // Se o usuário é o dono do post, mostrar botões de editar e excluir
+                       if (post.id_user == usuarioLogado || adm == 1) {
+                           html += `
+                               <button class="btn btn-primary" onclick="openEditForm(${post.id_post})">
+                                   <i class="fas fa-pencil-alt"></i>
+                               </button>
+                               <form method="post" action="backend/remover_post.php" style="display:inline;">
+                                   <input type="hidden" name="id_post" value="${post.id_post}">
+                                   <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja deletar?');">
+                                       <i class="fas fa-trash"></i>
+                                   </button>
+                               </form>
+                           `;
+                       }
+                       html += '</div>'; // Fecha o div dos botões
+                       html += '</div>'; // Fecha o div do cabeçalho do artigo
+
+
+                       // Corpo do artigo e detalhes
+                       html += '<p>' + $('<div/>').text(post.corpo).html().replace(/\n/g, '<br>') + '</p>';
+                       html += '<p><small>Da categoria: ' + $('<div/>').text(post.topico_nome).html() + '</small></p>';
+                       html += '<p><small>Postado em: ' + post.data_criacao + '</small></p>';
+
+
+                       // Renderizando comentários
+                       html += '<div class="comentarios" id="comments-' + post.id_post + '" style="display:none;">';
+                       html += loadComments(post.id_post); // Carregar comentários diretamente
+                       html += renderCommentForm(post.id_post, post.id_topico);
+                       html += '</div>';
+
+
+                       html += '</article><hr style="border: 1px solid #ffc107;">';
+
+
+                       // Adiciona o HTML ao container de posts
+                       $('#posts').append(html);
+
+
+                       // Se menos de 5 posts forem retornados, desativa o scroll infinito
+                       if (posts.length < 5) {
+                           $(window).off('scroll', onScroll);
+                       }
+                   });
+                   page++;
+               }
+
+
+                else {
+                   var html = '<article>';
+                   html += '<h1>Nenhum post encontrado </h1>';
+                   html += '</article><hr style="border: 1px solid #ffc107;">';
+                   $('#posts').append(html);
+                  
+                   $(window).off('scroll', onScroll);
+               }
+               loading = false;
+               $('#loading').hide();
+           }
+       });
+   }

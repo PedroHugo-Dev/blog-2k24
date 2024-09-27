@@ -29,7 +29,15 @@ if ($topicoResult) {
     $offset = ($page - 1) * $posts_per_page;
 
     // Consulta os posts relacionados ao id_topico com limite e offset
-    $query = $conect->prepare("SELECT * FROM post WHERE id_topico = :id_topico ORDER BY data_criacao DESC LIMIT :offset, :limit");
+    $query = $conect->prepare("
+    SELECT p.*, u.nome_user 
+    FROM post p
+    JOIN tb_user u ON p.id_user = u.id_user 
+    WHERE p.id_topico = :id_topico 
+    ORDER BY p.data_criacao DESC 
+    LIMIT :offset, :limit
+    ");
+
     $query->bindParam(':id_topico', $id_topico, PDO::PARAM_INT);
     $query->bindValue(':offset', $offset, PDO::PARAM_INT);
     $query->bindValue(':limit', $posts_per_page, PDO::PARAM_INT);

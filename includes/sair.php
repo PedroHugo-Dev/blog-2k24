@@ -6,7 +6,7 @@ if(isset($_REQUEST['sair'])){
 }
 
 if(isset($_REQUEST['logar'])){
-    header("Location: ../index.php?redirecionamento=true");
+    header("Location: ../index.php?acao=true");
 }
 
 if(isset($_REQUEST['criarConta'])){

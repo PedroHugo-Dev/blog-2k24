@@ -35,6 +35,17 @@ if ($topicoResult) {
 
 <style>
 /* Estilizando o card e posts */
+article {
+    position: relative; /* Adiciona um contexto de posicionamento */
+}
+
+.button-container {
+    position: absolute; /* Posiciona os botões em relação ao artigo */
+    top: 10px; /* Ajuste conforme necessário */
+    right: 10px; /* Ajuste conforme necessário */
+    display: flex;
+    justify-content: flex-end;
+}
 .card-body {
    padding: 20px;
 }
@@ -129,6 +140,24 @@ if ($topicoResult) {
        font-size: 12px;
    }
 }
+
+    /* Estilo para o título do blog */
+    .blog-title {
+        font-size: 28px; /* Aumenta o tamanho da fonte */
+        font-weight: 700; /* Deixa o texto em negrito */
+        color: #343a40; /* Cor do texto (similar ao restante) */
+        text-transform: uppercase; /* Transforma o texto em maiúsculas */
+        border-bottom: 2px solid #ffc107; /* Borda inferior para destaque */
+        padding-bottom: 10px; /* Espaçamento abaixo do título */
+    }
+
+    /* Melhorando a responsividade */
+    @media (max-width: 768px) {
+        .blog-title {
+            font-size: 24px; /* Reduz o tamanho em telas menores */
+        }
+    }
+
 </style>
 
 <!-- Content Wrapper. Contains page content -->
@@ -138,7 +167,7 @@ if ($topicoResult) {
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Blog - <?php echo ucfirst(htmlspecialchars($acao)); ?></h1>
+                    <h1 class="blog-title">Categoria - <?php echo ucfirst(htmlspecialchars($acao)); ?></h1>
                 </div>
             </div>
         </div><!-- /.container-fluid -->
@@ -199,67 +228,78 @@ $(document).ready(function() {
     }
 
     function loadPosts() {
-        if (loading) return;
-        loading = true;
-        $('#loading').show();
+    if (loading) return;
+    loading = true;
+    $('#loading').show();
 
-        $.ajax({
-            url: 'load_posts.php',
-            type: 'GET',
-            data: { assunto: assunto, page: page },
-            success: function(data) {
-                var posts = JSON.parse(data);
-                
-                if (posts.length > 0) {
-                    $.each(posts, function(index, post) {
-                        var html = '<article>';
-                        html += '<h2>' + $('<div/>').text(post.titulo).html() + '</h2>';
-                        html += '<p>' + $('<div/>').text(post.corpo).html().replace(/\n/g, '<br>') + '</p>';
-                        html += '<p><small>Postado em: ' + post.data_criacao + '</small></p>';
-                        
-                        // Botão para exibir comentários
-                        html += '<button class="btn btn-primary" data-post-id="' + post.id_post + '">Exibir Comentários</button>';
-                        
-                        // Renderizando comentários
-                        html += '<div class="comentarios" id="comments-' + post.id_post + '" style="display:none;">';
+    $.ajax({
+        url: 'load_posts.php',
+        type: 'GET',
+        data: { assunto: assunto, page: page },
+        success: function(data) {
+            var posts = JSON.parse(data);
 
-                        html += loadComments(post.id_post, post.id_topico); // Carregar comentários diretamente
+            if (posts.length > 0) {
+                $.each(posts, function(index, post) {
+                    var html = '<article>';
+                    html += '<h2>' + $('<div/>').text(post.titulo).html() + '</h2>';
+                    html += '<p><small><i>Postado por: ' + $('<div/>').text(post.nome_user).html() + '</i></small></p>';
+                    html += '<p>' + $('<div/>').text(post.corpo).html().replace(/\n/g, '<br>') + '</p>';
+                    html += '<p><small>Postado em: ' + post.data_criacao + '</small></p>';
 
-                        // Formulário para adicionar comentário
-                        html += renderCommentForm(post.id_post, post.id_topico);
-                        html += '</div>';
-                        
-                        // Condicional para exibir o botão de remover
+                    // Renderizando comentários
+                    html += '<div class="comentarios" id="comments-' + post.id_post + '" style="display:none;">';
+                    html += loadComments(post.id_post, post.id_topico); // Carregar comentários diretamente
+                    html += renderCommentForm(post.id_post, post.id_topico);
+                    html += '</div>';
 
-                        if (post.id_user == usuarioLogado || adm == true) {
-                            console.log("veridico")
-                            html += '<form method="post" action="backend/remover_post.php" style="display:inline;">';
-                            html += '<input type="hidden" name="id_post" value="' + post.id_post + '">';
-                            html += '<button type="submit" class="btn btn-danger" onclick="return confirm(\'Tem certeza que deseja remover este post?\');">Remover</button>';
-                            html += '</form>';
-                        }
+                    // Botões no canto superior direito
+                    html += `
+                        <div class="button-container" style="display: flex; justify-content: flex-end;">
+                            <button class="btn btn-primary" data-post-id="${post.id_post}">
+                                <i class="fas fa-comments"></i>
+                            </button>
+                    `;
 
-                        html += '</article><hr style="border: 1px solid #ffc107;">';
-                        $('#posts').append(html);
+                    // Condicional para exibir o botão de remover
+                    if (post.id_user == usuarioLogado || adm == true) {
+                        html += `
+                                                    <button class="btn btn-primary" onclick="openEditForm(${post.id_post})" style="margin-left: 10px;">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            <form method="post" action="backend/remover_post.php" style="display:inline;">
+                                <input type="hidden" name="id_post" value="${post.id_post}">
+                                <button type="submit" class="btn btn-danger" style="margin-left: 10px;" onclick="return confirm('Tem certeza que deseja remover este post?');">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        `;
+                    }
 
-                        if (posts.length <= 5) {
-                            $(window).off('scroll', onScroll);
-                        }
-                    });
-                    page++;
-                } else {
+                    html += '</div>'; // Fechando a div dos botões
+                    html += '</article><hr style="border: 1px solid #ffc107;">';
+                    $('#posts').append(html);
+
+                    if (posts.length < 5) {
+                        $(window).off('scroll', onScroll);
+                    }
+                });
+                page++;
+            } else {
+                if (page === 1) {
                     var html = '<article>';
                     html += '<h1>Nenhum post encontrado </h1>';
                     html += '</article><hr style="border: 1px solid #ffc107;">';
                     $('#posts').append(html);
-                    
                     $(window).off('scroll', onScroll);
                 }
-                loading = false;
-                $('#loading').hide();
             }
-        });
-    }
+            loading = false;
+            $('#loading').hide();
+        }
+    });
+}
+
 
     function loadComments(postId) {
         var commentsHtml = '';

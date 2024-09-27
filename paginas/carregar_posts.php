@@ -8,11 +8,12 @@ $posts_per_page = 5;  // Número de posts por página
 // Calculando o offset para a paginação
 $offset = ($page - 1) * $posts_per_page;
 
-// Consulta para obter posts aleatórios com o nome do tópico
+// Consulta para obter posts aleatórios com o nome do tópico e do usuário
 $query = $conect->prepare("
-    SELECT p.*, t.nome AS topico_nome
+    SELECT p.*, t.nome AS topico_nome, u.nome_user AS usuario_nome
     FROM post p
     JOIN topico t ON p.id_topico = t.id_topico
+    JOIN tb_user u ON p.id_user = u.id_user
     ORDER BY RAND() 
     LIMIT :offset, :limit
 ");

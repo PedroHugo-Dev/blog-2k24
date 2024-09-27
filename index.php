@@ -3,7 +3,9 @@ session_start();
 
 // Verifica se o usuário está autenticado (verifica se a sessão está ativa e se o usuário está logado)
     // Redireciona para a página home
-    if ($_GET["redirecionamento"] !== "true"){
+    
+    $acao = filter_var(isset($_GET['acao']) ? $_GET['acao'] : 'negado', FILTER_SANITIZE_STRING);
+    if ($acao !== "true" && $acao !== "negado"){
     
     header("Location: paginas/home.php");
     exit(); // Certifique-se de usar exit() após header()
@@ -43,15 +45,15 @@ session_start();
                                 echo '<div class="alert alert-danger">
                                 <button type="button" class="close" data-dismiss="alert">×</button>
                                 <strong>Erro!</strong> Senha incorreta, tente novamente.</div>';
-                                header("Location: index.php?acao=negado");
-                                exit(); // Certifique-se de usar exit() após header()
+                               // header("Location: index.php?acao=negado");
+                               // exit(); // Certifique-se de usar exit() após header()
                             }
                         } else {
                             echo '<div class="alert alert-danger">
                             <button type="button" class="close" data-dismiss="alert">×</button>
                             <strong>Erro!</strong> E-mail não encontrado, verifique seu login ou faça o cadastro.</div>';
-                            header("Location: index.php?acao=negado");
-                            exit(); // Certifique-se de usar exit() após header()
+                            //header("Location: index.php?acao=negado");
+                            //exit(); // Certifique-se de usar exit() após header()
                         }
                     } catch (PDOException $e) {
                         // Log the error instead of displaying it to the user

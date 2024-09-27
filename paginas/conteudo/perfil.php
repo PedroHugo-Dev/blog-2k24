@@ -61,6 +61,11 @@
                 include('../config/conexao.php'); // Inclui o arquivo de conexão com o banco de dados
 
                 // Verifica se o formulário foi enviado
+                consolePrint($email_user);
+                if ($email_user === 'noemail') {
+                  header('Location: home.php');
+                  exit();
+                }
                 if (isset($_POST['upPerfil'])) {
                   // Recebe os dados do formulário
                   $nome = $_POST['nome'];

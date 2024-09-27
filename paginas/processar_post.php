@@ -3,7 +3,7 @@
 include '../config/conexao.php'; // Inclua seu arquivo de conexão com o banco de dados
 include '../includes/header.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' and $email_user !== 'noemail' ) {
     // Recebe os dados do formulário
     $titulo = htmlspecialchars($_POST['titulo']);
     $descricao = htmlspecialchars($_POST['descricao']);
