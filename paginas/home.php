@@ -179,6 +179,9 @@
     </style>
 
     <!-- Content Wrapper. Contains page content -->
+    <?php if ($acao !== 'perfil') { ?>
+
+
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
@@ -220,12 +223,17 @@
         </section>
         <!-- /.content -->
     </div>
+    <?php } ?>
 
     <?php include_once('../includes/footer.php'); ?>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <script>
 $(document).ready(function() {
+    <?php if ($acao !== 'perfil') { ?>
+
+    
     console.log("SIM")
     var page = 1;
     var loading = false;
@@ -398,5 +406,5 @@ $(document).ready(function() {
         toggleComentarios(postId);
     });
 });
-
+<?php } ?>
 </script>
