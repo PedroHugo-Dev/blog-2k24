@@ -175,6 +175,28 @@
     .comentario {
     margin-bottom: 10px; /* Espaçamento entre comentários */
     }
+    .article-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.article-header .btn-group {
+    display: flex;
+    gap: 10px; /* Espaçamento entre os botões */
+}
+
+.posts article {
+    position: relative; /* Para que os botões sejam posicionados em relação ao artigo */
+}
+
+.posts .btn-group {
+    position: absolute;
+    top: 20px; /* Ajuste conforme a necessidade */
+    right: 20px;
+    display: flex;
+    gap: 10px; /* Espaçamento entre botões */
+}
 
     </style>
 
@@ -275,58 +297,61 @@ $(document).ready(function() {
                 var posts = JSON.parse(data);
                 if (posts.length > 0) {
                     $.each(posts, function(index, post) {
-                        var html = '<article>';
+                        var html = '<article style="position: relative;">'; // Permitir o posicionamento absoluto dos botões
+
+                        // Cabeçalho do artigo e botões
+                        html += '<div class="article-header" style="display: flex; justify-content: space-between; align-items: flex-start;">';
                         html += '<h2>' + $('<div/>').text(post.titulo).html() + '</h2>';
-                        html += '<p>' + $('<div/>').text(post.corpo).html().replace(/\n/g, '<br>') + '</p>';
 
-                                 // Botão para exibir comentários
-
-                        html += '<p><small>Da categoria: ' + $('<div/>').text(post.topico_nome).html() + '</small></p>'; // Adicionando o nome do tópico
-                        html += '<p><small>Postado em: ' + post.data_criacao + '</small></p>';
+                        // Grupo de botões no canto superior direito
+                        html += '<div class="btn-group" style="position: absolute; top: 20px; right: 20px; display: flex; gap: 10px;">';
                         
+                        // Botão para exibir comentários
+                        html += '<button class="btn btn-primary" data-post-id="' + post.id_post + '"> <i class="fas fa-comments"></i></button>';
+                        
+                        // Se o usuário é o dono do post, mostrar botões de editar e excluir
+                        if (post.id_user == usuarioLogado) {
+                            html += `
+                                <button class="btn btn-primary" onclick="openEditForm(${post.id_post})">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                                <form method="post" action="backend/remover_post.php" style="display:inline;">
+                                    <input type="hidden" name="id_post" value="${post.id_post}">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja deletar?');">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            `;
+                        }
+
+                        html += '</div>'; // Fecha o div dos botões
+                        html += '</div>'; // Fecha o div do cabeçalho do artigo
+
+                        // Corpo do artigo e detalhes
+                        html += '<p>' + $('<div/>').text(post.corpo).html().replace(/\n/g, '<br>') + '</p>';
+                        html += '<p><small>Da categoria: ' + $('<div/>').text(post.topico_nome).html() + '</small></p>';
+                        html += '<p><small>Postado em: ' + post.data_criacao + '</small></p>';
+
                         // Renderizando comentários
                         html += '<div class="comentarios" id="comments-' + post.id_post + '" style="display:none;">';
                         html += loadComments(post.id_post); // Carregar comentários diretamente
-                        
-                        
-                        // Formulário para adicionar comentário
                         html += renderCommentForm(post.id_post, post.id_topico);
                         html += '</div>';
-                        html += '<button class="btn btn-primary" data-post-id="' + post.id_post + '"> <i class="fas fa-comments"></i></button>';
-                        if (post.id_user == usuarioLogado) {
-                            console.log(post.id_user);
-                            html += `
-                                            <div style="display: flex; align-items: flex-end;">
-                                            ` 
-                                          
-                                            html += `     
-                                                <button class="btn btn-primary" onclick="openEditForm(<?php echo $post['id_post']; ?>)" style="margin-left: 10px;">
-                                                    <i class="fas fa-pencil-alt"></i>
-                                                </button>
-                                                <form method="post" action="backend/remover_post.php" style="display:inline;">
-                                                    `
-                                                    html += '<input type="hidden" name="id_post" value="' + post.id_post + '">';
-                            html += `                                                                                   
-                                                    <button type="submit" class="btn btn-danger" style="margin-left: 10px;" onclick="return confirm('Tem certeza que deseja deletar?');">
-                                                           <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                            `
-                            
-                            html += '<form method="post" action="backend/remover_post.php" style="display:inline;">';
-                            html += '</form>';
-                        }
 
                         html += '</article><hr style="border: 1px solid #ffc107;">';
+
+                        // Adiciona o HTML ao container de posts
                         $('#posts').append(html);
 
+                        // Se menos de 5 posts forem retornados, desativa o scroll infinito
                         if (posts.length < 5) {
                             $(window).off('scroll', onScroll);
                         }
                     });
                     page++;
-                } else {
+                }
+
+                 else {
                     var html = '<article>';
                     html += '<h1>Nenhum post encontrado </h1>';
                     html += '</article><hr style="border: 1px solid #ffc107;">';

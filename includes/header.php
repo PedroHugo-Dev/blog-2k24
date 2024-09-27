@@ -422,11 +422,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                   <p>Ajuda</p>
                 </a>
               </li>
-              <li class="nav-item">
-                <a href="./index3.php" class="nav-link">
-                  <p>Contatos</p>
-                </a>
-              </li>
               <?php ///////// ?>
               <li class="nav-item">
                 <a href="../paginas/index3.php" class="nav-link">
