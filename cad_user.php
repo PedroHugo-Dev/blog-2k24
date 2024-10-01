@@ -260,6 +260,12 @@ try {
                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                  <h5><i class="icon fas fa-check"></i> OK!</h5>
                  Dados inseridos com sucesso !!!
+                 //redirecioar para  home
+                 <script>
+                     setTimeout(function() {
+                         window.location.href = "index.php";
+                     }, 200);
+                 </script>
              </div>
          </div>';
  } else {
