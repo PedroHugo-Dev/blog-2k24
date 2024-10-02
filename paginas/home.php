@@ -331,15 +331,19 @@ $(document).ready(function() {
 
                     if (post.id_user == usuarioLogado || adm == 1) {
                         html += `
-                            <button class="btn btn-primary" onclick="openEditForm(${post.id_post})" style="margin-left: 10px;">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
+                            <form method="post" action="backend/editar_post.php" style="display:inline;">
+                                <input type="hidden" name="id_post" value="${post.id_post}">
+                                <button type="submit" class="btn btn-warning" style="margin-left: 10px;">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </form>
                             <form method="post" action="backend/remover_post.php" style="display:inline;">
                                 <input type="hidden" name="id_post" value="${post.id_post}">
                                 <button type="submit" class="btn btn-danger" style="margin-left: 10px;" onclick="return confirm('Tem certeza que deseja deletar?');">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
+                            
                         `;
                     }
 
@@ -387,11 +391,13 @@ function loadComments(postId) {
                     // Check if the logged-in user can edit the comment
                     if (comment.id_user == usuarioLogado || adm == 1) {
                         commentsHtml += `
-                           
-                            <form method="post" action="backend/remover_comentario.php" style="display:inline;">
+                            <form method="post" action="backend/editar_comentario.php" style="display:inline;">
+                                <button type="submit" class="btn btn-warning" style="margin-left: 10px;">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
                                 <input type="hidden" name="id_comentario" value="${comment.id_comentario}">
                                 <button type="submit" class="btn btn-danger" style="margin-left: 10px;" onclick="return confirm('Tem certeza que deseja deletar este comentário?');">
-                                    <i class="fas fa-trash"></i> Deletar
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </form>
                         `;
@@ -406,39 +412,6 @@ function loadComments(postId) {
     });
     return commentsHtml; // Return generated comments
 }
-function openEditCommentForm(commentId, currentText) {
-    // Exibe o ID do comentário no console para depuração
-    console.log("Editando comentário ID:", commentId);
-    
-    var commentDiv = $('#comment-' + commentId);
-    var editFormHtml = `
-        <form method="post" action="backend/editar_comentario.php" id="edit-comment-form-${commentId}">
-            <input type="hidden" name="id_comentario" value="${commentId}">
-            <div class="form-group">
-                <textarea name="texto_comentario" class="form-control" rows="3" required>${currentText}</textarea>
-            </div>
-            <button type="submit" class="btn btn-success">Salvar</button>
-            <button type="button" class="btn btn-secondary" onclick="cancelEdit(${commentId})">Cancelar</button>
-        </form>
-    `;
-    
-    // Substitui o div do comentário pelo formulário de edição
-    commentDiv.html(editFormHtml);
-}
-
-function cancelEdit(commentId) {
-    // Você pode armazenar o texto original em um atributo data ou similar
-    var commentDiv = $('#comment-' + commentId);
-    
-    // Lógica para recuperar o texto original e reverter a edição
-    // Você pode armazenar o texto original em um atributo data quando você criar a div do comentário
-    var originalText = commentDiv.data('original-text');
-
-    // Retorna o conteúdo original
-    commentDiv.html(originalText);
-}
-
-
     function renderCommentForm(postId, topicoId) {
     // Define the button and textarea variable
     let button, textarea;
