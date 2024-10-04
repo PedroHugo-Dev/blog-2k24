@@ -264,12 +264,15 @@ $(document).ready(function() {
                     // Condicional para exibir o botão de remover
                     if (post.id_user == usuarioLogado || adm == true) {
                         html += `
-                                                    <button class="btn btn-primary" onclick="openEditForm(${post.id_post})" style="margin-left: 10px;">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
+                        <form method="post" action="backend/editar_post.php" style="display:inline;">
+                                <input type="hidden" name="id_post" value="${post.id_post}">
+                                <button type="submit" class="btn btn-warning" style="margin-left: 10px;">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </form>
                             <form method="post" action="backend/remover_post.php" style="display:inline;">
                                 <input type="hidden" name="id_post" value="${post.id_post}">
-                                <button type="submit" class="btn btn-danger" style="margin-left: 10px;" onclick="return confirm('Tem certeza que deseja remover este post?');">
+                                <button type="submit" class="btn btn-danger" style="margin-left: 10px;" onclick="return confirm('Tem certeza que deseja deletar?');">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -301,33 +304,49 @@ $(document).ready(function() {
 }
 
 
-    function loadComments(postId) {
-        var commentsHtml = '';
-        $.ajax({
-            url: 'load_comments.php',
-            type: 'GET',
-            data: { id_post: postId },
-            async: false,
+function loadComments(postId) {
+    var commentsHtml = ''; // HTML for the comments
+    $.ajax({
+        url: 'load_comments.php',
+        type: 'GET',
+        data: { id_post: postId },
+        async: false, // Make this call synchronous
+        success: function(data) {
+            var comments = JSON.parse(data);
+            if (comments.length > 0) {
+                $.each(comments, function(index, comment) {
+                    commentsHtml += '<div class="comentario" id="comment-' + comment.id_comentario + '">';
+                    commentsHtml += '<p><strong>' + $('<div/>').text(comment.nome_user).html() + ':</strong></p>';
+                    commentsHtml += '<p>' + $('<div/>').text(comment.corpo).html().replace(/\n/g, '<br>') + '</p>';
+                    commentsHtml += '<p><small>Comentário postado em: ' + comment.data_criacao + '</small></p>';
 
-            success: function(data) {
-                var comments = JSON.parse(data);
-                if (comments.length > 0) {
-                    $.each(comments, function(index, comment) {
-                        commentsHtml += '<div class="comentario">';
-                        commentsHtml += '<p><strong>' + $('<div/>').text(comment.nome_user).html() + ':</strong></p>';
-                        commentsHtml += '<p>' + $('<div/>').text(comment.corpo).html().replace(/\n/g, '<br>') + '</p>';
-                        commentsHtml += '<p><small>Comentário postado em: ' + comment.data_criacao + '</small></p>';
-                        commentsHtml += '</div>';
-                    });
-                } else {
-                    commentsHtml += '<div class="comentario">';
-                    commentsHtml += '<p>Nenhum comentário encontrado.</p>';
+                    // Check if the logged-in user can edit the comment
+                    if (comment.id_user == usuarioLogado || adm == 1) {
+                        commentsHtml += `
+                            <form method="post" action="backend/editar_comentario.php" style="display:inline;">
+                            <input type="hidden" name="id_comentario" value="${comment.id_comentario}">
+                                <button type="submit" class="btn btn-warning" style="margin-left: 10px;">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </form>
+                            <form method="post" action="backend/remover_comentario.php" style="display:inline;">
+                            <input type="hidden" name="id_comentario" value="${comment.id_comentario}">     
+                                <button type="submit" class="btn btn-danger" style="margin-left: 10px;" onclick="return confirm('Tem certeza que deseja deletar este comentário?');">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        `;
+                    }
+
                     commentsHtml += '</div>';
-                }
+                });
+            } else {
+                commentsHtml += '<p>Nenhum comentário encontrado.</p>';
             }
-        });
-        return commentsHtml;
-    }
+        }
+    });
+    return commentsHtml; // Return generated comments
+}
 
     function renderCommentForm(postId, topicoId) {
     // Define the button and textarea variable

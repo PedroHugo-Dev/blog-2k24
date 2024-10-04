@@ -392,10 +392,13 @@ function loadComments(postId) {
                     if (comment.id_user == usuarioLogado || adm == 1) {
                         commentsHtml += `
                             <form method="post" action="backend/editar_comentario.php" style="display:inline;">
+                            <input type="hidden" name="id_comentario" value="${comment.id_comentario}">
                                 <button type="submit" class="btn btn-warning" style="margin-left: 10px;">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
-                                <input type="hidden" name="id_comentario" value="${comment.id_comentario}">
+                            </form>
+                            <form method="post" action="backend/remover_comentario.php" style="display:inline;">
+                            <input type="hidden" name="id_comentario" value="${comment.id_comentario}">     
                                 <button type="submit" class="btn btn-danger" style="margin-left: 10px;" onclick="return confirm('Tem certeza que deseja deletar este comentário?');">
                                     <i class="fas fa-trash"></i>
                                 </button>

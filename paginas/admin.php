@@ -75,96 +75,150 @@ $users = fetchUsers($conect);
 $topics = fetchTopics($conect);
 $posts = fetchPosts($conect);
 ?>
-
 <style>
-    /* Estilos para o modal */
-    .modal {
-        display: none; 
-        position: fixed; 
-        z-index: 1; 
-        left: 0; 
-        top: 0; 
-        width: 100vw; 
-        height: 100vh; 
-        overflow: auto; 
-        background-color: rgba(0, 0, 0, 0.4);
-        text-align: center;
+    /* Estilos Gerais */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
     }
 
-    .modal-content {
-        background-color: #fefefe;
-        margin-top: 250px;
-        margin-left: 770px;
-        padding: 20px; 
-        border: 1px solid #888; 
-        width: 400px;
-        height: auto;
+    .content-wrapper {
+        padding: 20px;
     }
 
-    .close {
-        color: #aaa; 
-        float: right; 
-        font-size: 28px; 
-        font-weight: bold; 
+    .card-primary {
+        background-color: #ffffff;
+        border: none; /* Remover borda */
+        border-radius: 4px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
-    .close:hover,
-    .close:focus {
-        color: black; 
-        text-decoration: none; 
-        cursor: pointer; 
-    }
-    .titulo-admin{
+    .titulo-admin {
         background-color: #25688E;
-    }
-    #titulo-G{
+        padding: 10px;
         color: white;
+        border-radius: 4px 4px 0 0;
+    }
+
+    #titulo-G {
+        margin: 0;
         font-size: 24px;
-        margin-top: 4px;
-        margin-left: 8px;
-    }
-    .button-delete-admin{
-        border: none;
-        background-color: #ffc107;
-        border-radius: 3px;
-        margin-right: 3px;
     }
 
-    .button-delete-admin:hover{
-        background-color: #dc3545;
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        padding: 10px;
+        /* Remover borda inferior */
+        /* border-bottom: 1px solid #dddddd; */
+    }
+
+    /* Estilos para Botões */
+    .button-delete-admin,
+    .button-update-admin {
+        border: none;
+        border-radius: 3px;
+        padding: 8px 12px;
+        cursor: pointer;
+        margin-right: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .button-delete-admin {
+        background-color: #dc3545; /* Vermelho */
         color: white;
     }
 
-    .button-update-admin{
-        border: none;
-        background-color: #ffc107;
-        border-radius: 3px;
+    .button-delete-admin:hover {
+        background-color: #c82333; /* Vermelho escuro */
     }
 
-    .button-update-admin:hover{
-        background-color: #47d111;
+    .button-update-admin {
+        background-color: #ffc107; /* Amarelo */
+        color: #fff;
+    }
+
+    .button-update-admin:hover {
+        background-color: #e0a800; /* Amarelo escuro */
+    }
+    
+    .modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0; 
+    top: ; 
+    width: 100vw; 
+    height: 100vh; 
+    overflow: auto; 
+    background-color: rgba(0, 0, 0, 0.4);
+    text-align: center;
+    justify-content: center; /* Centralizar horizontalmente */
+    align-items: center; /* Centralizar verticalmente */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px; 
+    border: 1px solid #888; 
+    width: 400px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    margin: auto; 
+    display: flex; 
+    flex-direction: column; 
+    margin-top: 300px; /* Adicione esta linha para espaçamento */
+}
+
+
+    .modal h2 {
+        margin-top: 0;
+    }
+
+    .modal input[type="text"],
+    .modal input[type="email"],
+    .modal textarea {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+    }
+
+    .modal button {
+        padding: 10px 15px;
+        background-color: #007bff;
         color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
     }
 
-/*Style do User*/
-    #editUserName{
-        margin-bottom:5px;
+    .modal button:hover {
+        background-color: #0056b3; /* Azul escuro */
     }
 
-    #editUserEmail{
-        margin-bottom:10px;
-    }
+    /* Estilos Responsivos */
+    @media (max-width: 600px) {
+        .modal-content {
+            width: 90%;
+            margin: 20px auto;
+        }
 
-
-/*Style do Tópico e dos Posts*/
-    #editTopicName, #editPostTitle{
-        width:280px;
-    }
-
-    #editTopicDescription, #editPostBody{
-        width:280px;
+        .button-update-admin,
+        .button-delete-admin {
+            width: 100%;
+            margin: 5px 0;
+        }
     }
 </style>
+
 </head>
 
 <body>
@@ -236,7 +290,7 @@ $posts = fetchPosts($conect);
                     </div>
                 </div>
             </div>
-
+                                        
             <div class="row">
                 <div class="col-md-12">
                     <div class="card card-primary">

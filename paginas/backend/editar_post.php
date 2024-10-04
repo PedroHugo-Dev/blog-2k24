@@ -52,90 +52,132 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  <meta http-equiv="X-UA-Compatible" content="IE=edge">
  <title>StarBlog | Editar Post</title>
  <meta name="viewport" content="width=device-width, initial-scale=1">
- <!-- Font Awesome -->
  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
- <!-- Ionicons -->
  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
- <!-- icheck bootstrap -->
  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
- <!-- Theme style -->
  <link rel="stylesheet" href="dist/css/adminlte.min.css">
- <!-- Google Font: Source Sans Pro -->
  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-  <!-- CSS Personalizado -->
  <style>
    /* Reseta estilos padrão */
+   body, h1, form, input, button {
+       margin: 0;
+       padding: 0;
+       box-sizing: border-box;
+   }
+
+   /* Define estilos gerais do corpo */
    body {
        font-family: 'Source Sans Pro', sans-serif;
-       background-color: #f0f4f8;
+       background-color: #f0f4f8; /* Cor de fundo leve */
        display: flex;
        justify-content: center;
        align-items: center;
        height: 100vh;
    }
-   .login-box {
-       background-color: #ffffff;
-       padding: 20px;
+
+   /* Estiliza o contêiner de edição do post */
+   .edit-post-box {
+       background-color: #ffffff; /* Fundo branco para o formulário */
+       padding: 30px;
        border-radius: 8px;
-       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+       box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
        width: 100%;
        max-width: 600px;
+       text-align: left; /* Alinha o texto à esquerda */
    }
-   .btn-primary {
-       background-color: #ffc107;
-       border-color: #ffc107;
-       color: #0056b3;
+
+   /* Estiliza os rótulos dos campos */
+   .form-group label {
        font-weight: bold;
+       color: #0056b3; /* Azul escuro para o rótulo */
+       margin-bottom: 5px; /* Espaçamento abaixo do rótulo */
    }
+
+   /* Estiliza os campos de entrada */
+   .input-group .form-control {
+       border-color: #0056b3; /* Azul para a borda dos campos */
+       border-radius: 8px; /* Bordas arredondadas */
+       padding: 10px;
+       height: 45px; /* Altura dos inputs */
+   }
+
+   /* Estiliza o título do post */
+   .titulo-post {
+       font-size: 1.5rem; /* Aumenta o tamanho do texto do título */
+       margin-top: 5px; /* Espaçamento acima do título */
+       margin-bottom: 15px; /* Espaçamento abaixo do título */
+       color: #333; /* Cor do título */
+   }
+
+   /* Estiliza o textarea */
+   textarea {
+       border-color: #0056b3; /* Azul para a borda do textarea */
+       border-radius: 8px; /* Bordas arredondadas */
+       padding: 10px;
+       width: calc(100% - 22px); /* Largura total com padding */
+       height: 150px; /* Altura fixa para o textarea */
+       resize: none; /* Impede redimensionamento manual */
+   }
+
+   /* Estiliza o botão de salvar */
+   .btn-primary {
+       background-color: #ffc107; /* Amarelo para o fundo do botão */
+       border-color: #ffc107; /* Amarelo para a borda do botão */
+       color: #0056b3; /* Azul para o texto do botão */
+       font-weight: bold;
+       border-radius: 5px; /* Bordas arredondadas no botão */
+       padding: 10px 20px; /* Espaçamento interno do botão */
+       width: 100%; /* Largura total do botão */
+   }
+
    .btn-primary:hover {
-       background-color: #e0a800;
-       border-color: #e0a800;
+       background-color: #e0a800; /* Tom mais escuro de amarelo quando o botão é hover */
+       border-color: #e0a800; /* Tom mais escuro de amarelo para a borda */
+   }
+
+   .text-center {
+       text-align: center;
+       color: #0056b3; /* Azul escuro para o texto */
    }
  </style>
 </head>
 
-<body class="hold-transition login-page">
-<div class="login-box">
- <div class="login-logo">
-   <a href="editar_post.php?id_post=<?php echo $post['id_post']; ?>" style="font-size: 25px"><b>Editar Post</b></a>
+<body>
+<div class="edit-post-box">
+ <div class="text-center mb-4">
+   <h2><b>Editar Post</b></h2>
+   <p>Altere as informações do post abaixo:</p>
  </div>
- <div class="card">
-   <div class="card-body login-card-body">
-     <p class="login-box-msg">Edite os dados do post abaixo:</p>
 
-     <form method="post" action="editar_post.php">
-       <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
-       <div class="input-group mb-3">
-         <input type="text" name="titulo" class="form-control" placeholder="Digite o Título..." value="<?php echo htmlspecialchars($post['titulo']); ?>" required>
-         <div class="input-group-append">
-           <div class="input-group-text">
-             <span class="fas fa-heading"></span>
-           </div>
-         </div>
-       </div>
-       <div class="form-group">
-         <label for="corpo">Corpo do Post</label>
-         <textarea name="corpo" class="form-control" rows="5" required><?php echo htmlspecialchars($post['corpo']); ?></textarea>
-       </div>
-       <div class="row">
-         <div class="col-12">
-           <button type="submit" name="botao" class="btn btn-primary btn-block">Salvar</button>
-         </div>
-         <div class="col-12">
-           <p style="text-align: center;">
-             <a href="../home.php" class="text-center">Voltar para o Home!</a>
-           </p>
-         </div>
-       </div>
-     </form>
+ <form method="post" action="editar_post.php">
+   <input type="hidden" name="id_post" value="<?php echo $post['id_post']; ?>">
+   <div class="form-group mb-3 row">
+     <label for="titulo" class="col-sm-2 col-form-label">Título do Post</label>
+     <div class="col-sm-10">
+       <textarea name="titulo" class="form-control" rows="1" required><?php echo htmlspecialchars($post['titulo']); ?></textarea>
+     </div>
    </div>
- </div>
+   <div class="form-group row">
+     <label for="corpo" class="col-sm-2 col-form-label">Corpo do Post</label>
+     <div class="col-sm-10">
+       <textarea name="corpo" class="form-control" required><?php echo htmlspecialchars($post['corpo']); ?></textarea>
+     </div>
+   </div>
+   <div class="row">
+     <div class="col-12">
+       <button type="submit" name="botao" class="btn btn-primary">Salvar</button>
+     </div>
+     <div class="col-12 text-center mt-3">
+       <p>
+         <a href="../home.php" class="text-muted">Voltar para o Home!</a>
+       </p>
+     </div>
+   </div>
+</form>
+
 </div>
-<!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
 <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
 </body>
 </html>

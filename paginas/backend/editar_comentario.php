@@ -1,14 +1,7 @@
 <?php
 include_once('../../config/conexao.php');
-// Exemplo de botão para abrir o modal de edição em uma lista de comentários
-foreach ($comentarios as $comentario) {
-    echo '<div class="comentario">';
-    echo '<p>' . htmlspecialchars($comentario['texto']) . '</p>';
-    echo '<button type="button" class="btn btn-warning" onclick="editarComentario(' . $comentario['id_comentario'] . ', \'' . htmlspecialchars($comentario['texto']) . '\')">Editar</button>';
-    echo '</div>';
-}
 
-// Verifica se o usuário está autenticado, se necessário
+// Verifica se o usuário está autenticado
 session_start();
 if (!isset($_SESSION['loginUser'])) {
     header('Location: ../login.php');
@@ -57,82 +50,114 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>StarBlog | Editar Comentário</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-    <!-- icheck bootstrap -->
     <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-    <!-- Theme style -->
     <link rel="stylesheet" href="dist/css/adminlte.min.css">
-    <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
     <style>
+        /* Reseta estilos padrão */
+        body, h1, form, input, button {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Define estilos gerais do corpo */
         body {
             font-family: 'Source Sans Pro', sans-serif;
-            background-color: #f0f4f8;
+            background-color: #f0f4f8; /* Cor de fundo leve */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
-        .login-box {
-            background-color: #ffffff;
-            padding: 20px;
+
+        /* Estiliza o contêiner de edição do comentário */
+        .edit-comment-box {
+            background-color: #ffffff; /* Fundo branco para o formulário */
+            padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 600px;
+            text-align: left; /* Alinha o texto à esquerda */
         }
-        .btn-primary {
-            background-color: #ffc107;
-            border-color: #ffc107;
-            color: #0056b3;
+
+        /* Estiliza os rótulos dos campos */
+        .form-group label {
             font-weight: bold;
+            color: #0056b3; /* Azul escuro para o rótulo */
+            margin-bottom: 5px; /* Espaçamento abaixo do rótulo */
         }
+
+        /* Estiliza os campos de entrada */
+        .input-group .form-control {
+            border-color: #0056b3; /* Azul para a borda dos campos */
+            border-radius: 8px; /* Bordas arredondadas */
+            padding: 10px;
+            height: 45px; /* Altura dos inputs */
+        }
+
+        /* Estiliza o textarea */
+        textarea {
+            border-color: #0056b3; /* Azul para a borda do textarea */
+            border-radius: 8px; /* Bordas arredondadas */
+            padding: 10px;
+            width: calc(100% - 22px); /* Largura total com padding */
+            height: 150px; /* Altura fixa para o textarea */
+            resize: none; /* Impede redimensionamento manual */
+        }
+
+        /* Estiliza o botão de salvar */
+        .btn-primary {
+            background-color: #ffc107; /* Amarelo para o fundo do botão */
+            border-color: #ffc107; /* Amarelo para a borda do botão */
+            color: #0056b3; /* Azul para o texto do botão */
+            font-weight: bold;
+            border-radius: 5px; /* Bordas arredondadas no botão */
+            padding: 10px 20px; /* Espaçamento interno do botão */
+            width: 100%; /* Largura total do botão */
+        }
+
         .btn-primary:hover {
-            background-color: #e0a800;
-            border-color: #e0a800;
+            background-color: #e0a800; /* Tom mais escuro de amarelo quando o botão é hover */
+            border-color: #e0a800; /* Tom mais escuro de amarelo para a borda */
+        }
+
+        .text-center {
+            text-align: center;
+            color: #0056b3; /* Azul escuro para o texto */
         }
     </style>
 </head>
 
-<body class="hold-transition login-page">
-<!-- Modal para editar comentários -->
-<div class="modal fade" id="editarComentarioModal" tabindex="-1" role="dialog" aria-labelledby="editarComentarioModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editarComentarioModalLabel">Editar Comentário</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+<body>
+<div class="edit-comment-box">
+    <div class="text-center mb-4">
+        <h2><b>Editar Comentário</b></h2>
+        <p>Altere o comentário abaixo:</p>
+    </div>
+
+    <form method="post" action="editar_comentario.php">
+        <input type="hidden" name="id_comentario" value="<?php echo $comentario['id_comentario']; ?>">
+        <div class="form-group mb-3">
+            <label for="corpo">Comentário</label>
+            <textarea name="corpo" class="form-control" required><?php echo htmlspecialchars($comentario['corpo']); ?></textarea>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <button type="submit" name="botao" class="btn btn-primary">Salvar</button>
             </div>
-            <div class="modal-body">
-                <form method="post" action="processar_comentario.php">
-                    <div class="form-group">
-                        <label for="comentario">Comentário</label>
-                        <textarea class="form-control" id="comentario" name="comentario" rows="3" placeholder="Digite seu comentário" required></textarea>
-                    </div>
-                    <input type="hidden" id="id_comentario" name="id_comentario">
-                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                </form>
+            <div class="col-12 text-center mt-3">
+                <p>
+                    <a href="../home.php" class="text-muted">Voltar para o Home!</a>
+                </p>
             </div>
         </div>
-    </div>
+    </form>
 </div>
-
-<!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
 <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
 </body>
 </html>
-<script>
-function editarComentario(id, texto) {
-    document.getElementById('id_comentario').value = id; // Define o id do comentário
-    document.getElementById('comentario').value = texto; // Define o texto do comentário
-    $('#editarComentarioModal').modal('show'); // Exibe o modal
-}
-</script>
